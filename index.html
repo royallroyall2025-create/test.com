@@ -1,0 +1,3044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royal Cafe POS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #fdf2f8;
+            color: #333;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 95vh;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #db2777 0%, #ec4899 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            font-size: 32px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 50px;
+        }
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            background: #fce7f3;
+            border-bottom: 1px solid #fbcfe8;
+        }
+        
+        .nav-tab {
+            padding: 15px 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .nav-tab.active {
+            border-bottom: 3px solid #db2777;
+            color: #db2777;
+            background: white;
+        }
+        
+        .nav-tab:hover {
+            background: #f9a8d4;
+            color: white;
+        }
+        
+        .slider-container {
+            height: 200px;
+            position: relative;
+            overflow: hidden;
+            background: #fce7f3;
+        }
+        
+        .slider {
+            display: flex;
+            width: 300%;
+            height: 100%;
+            transition: transform 0.5s ease-in-out;
+        }
+        
+        .slide {
+            flex: 1;
+            min-width: 33.33%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .slide-1 {
+            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), 
+                        url('https://scontent.fpnh8-1.fna.fbcdn.net/v/t39.30808-6/448605764_908134477993450_5248456771952105491_n.jpg?stp=dst-jpg_s206x206_tt6&_nc_cat=110&ccb=1-7&_nc_sid=7a06f5&_nc_eui2=AeHiUXf-5csHQcDMw1SzOW_WIadhxHoVlDkhp2HEehWUOcaj5ADNcIGluIUBU7xhhs_NK7tWG_80HxkcZLfK0yWS&_nc_ohc=kptGGUBZt5MQ7kNvwEVSeRr&_nc_oc=AdliWd2Bwf8E9kMuEJs_VwmGvncSgMUuPZidA9v_ajrDOfXhLeKQg0NlCVgkLMCTwH4&_nc_zt=23&_nc_ht=scontent.fpnh8-1.fna&_nc_gid=yMJ_3UOu_ilTAkR2qkXPSQ&oh=00_AfbXjk31pxnq2fjuz5OCHpAbpaxManAcH9QjYah-a45VMw&oe=68D33C13');
+        }
+        
+        .slide-2 {
+            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), 
+                        url('https://scontent.fpnh8-1.fna.fbcdn.net/v/t39.30808-6/448605764_908134477993450_5248456771952105491_n.jpg?stp=dst-jpg_s206x206_tt6&_nc_cat=110&ccb=1-7&_nc_sid=7a06f5&_nc_eui2=AeHiUXf-5csHQcDMw1SzOW_WIadhxHoVlDkhp2HEehWUOcaj5ADNcIGluIUBU7xhhs_NK7tWG_80HxkcZLfK0yWS&_nc_ohc=kptGGUBZt5MQ7kNvwEVSeRr&_nc_oc=AdliWd2Bwf8E9kMuEJs_VwmGvncSgMUuPZidA9v_ajrDOfXhLeKQg0NlCVgkLMCTwH4&_nc_zt=23&_nc_ht=scontent.fpnh8-1.fna&_nc_gid=yMJ_3UOu_ilTAkR2qkXPSQ&oh=00_AfbXjk31pxnq2fjuz5OCHpAbpaxManAcH9QjYah-a45VMw&oe=68D33C13');
+        }
+        
+        .slide-3 {
+            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), 
+                        url('https://scontent.fpnh8-3.fna.fbcdn.net/v/t39.30808-6/486280077_1113595500780679_4349294778887170977_n.jpg?stp=dst-jpg_s206x206_tt6&_nc_cat=102&ccb=1-7&_nc_sid=714c7a&_nc_eui2=AeEcixA2zGMfz7aFlTIny1tnvfUH2aja_q699QfZqNr-rhA-cE5jPEykWJHbd-52O6Dg2qBXQOUxQXvVNIbfblQX&_nc_ohc=F9fAIAinuLUQ7kNvwGetJ5s&_nc_oc=AdmW0B4XJGWtfmMh268ujY9Rj4RDTx_b7WUepy84yq6TTBsy1HRT3LKyiTyL6BVKmRs&_nc_zt=23&_nc_ht=scontent.fpnh8-3.fna&_nc_gid=LzFXnSBLBKpjyv5dwr8LIA&oh=00_AfaBsqlq8H4nE9dtG0lL_4JibjpxgtjytVL_6PvTMQfjqw&oe=68D3462E');
+        }
+        
+        .slider-nav {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+        
+        .slider-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .slider-dot.active {
+            background: white;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .order-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #fbcfe8;
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #fdf2f8;
+        }
+        
+        .search-container {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 45px 12px 15px;
+            border: 1px solid #fbcfe8;
+            border-radius: 10px;
+            font-size: 16px;
+            background: #fdf2f8;
+            transition: all 0.3s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #db2777;
+            box-shadow: 0 0 0 3px rgba(219, 39, 119, 0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #db2777;
+            font-size: 18px;
+        }
+        
+        .search-results-info {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #9d174d;
+            font-weight: 500;
+        }
+        
+        .categories {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .category-btn {
+            padding: 12px 20px;
+            background: #fdf2f8;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            color: #db2777;
+        }
+        
+        .category-btn.active {
+            background: #db2777;
+            color: white;
+        }
+        
+        .category-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(219, 39, 119, 0.2);
+        }
+        
+        .menu-container {
+            overflow-y: auto;
+            flex: 1;
+            padding-right: 5px;
+        }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+        }
+        
+        .menu-item {
+            background: #fdf2f8;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 200px;
+            border: 1px solid #fbcfe8;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .menu-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(219, 39, 119, 0.15);
+            background: #fce7f3;
+        }
+        
+        .menu-item-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .menu-item h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #9d174d;
+        }
+        
+        .menu-item p {
+            color: #db2777;
+            font-weight: 600;
+            margin-top: auto;
+        }
+        
+        .menu-item small {
+            color: #be185d;
+            font-size: 12px;
+        }
+        
+        .cart-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            border: 1px solid #fbcfe8;
+        }
+        
+        .cart-header {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #fdf2f8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .cart-items {
+            margin-bottom: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #fdf2f8;
+        }
+        
+        .cart-item-details {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            padding-right: 10px;
+        }
+        
+        .cart-item-name {
+            font-weight: 500;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        
+        .quantity-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            background: #db2777;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .cart-item-price {
+            font-weight: 600;
+            color: #db2777;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        .cart-totals {
+            margin: 20px 0;
+            padding: 20px;
+            background: #fdf2f8;
+            border-radius: 12px;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        
+        .total-final {
+            font-weight: bold;
+            font-size: 20px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #fbcfe8;
+            color: #9d174d;
+        }
+        
+        .pay-btn {
+            width: 100%;
+            padding: 18px;
+            background: #db2777;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .pay-btn:hover {
+            background: #be185d;
+        }
+        
+        .notes-section {
+            margin-top: 20px;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #fbcfe8;
+            border-radius: 12px;
+            resize: vertical;
+            min-height: 100px;
+            margin-top: 10px;
+            background: #fdf2f8;
+        }
+        
+        .empty-cart {
+            text-align: center;
+            color: #888;
+            padding: 30px 0;
+        }
+        
+        .empty-cart i {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: #fbcfe8;
+        }
+        
+        .discount-section {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f0f9ff;
+            border-radius: 10px;
+            border: 1px solid #bae6fd;
+        }
+        
+        .discount-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .discount-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .discount-type {
+            padding: 10px;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            background: white;
+            font-size: 14px;
+        }
+        
+        .discount-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .apply-discount-btn {
+            flex: 1;
+            padding: 10px;
+            background: #0ea5e9;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .apply-discount-btn:hover {
+            background: #0284c7;
+        }
+        
+        .remove-discount-btn {
+            flex: 1;
+            padding: 10px;
+            background: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .remove-discount-btn:hover {
+            background: #e5e7eb;
+        }
+        
+        .discount-applied {
+            color: #0ea5e9;
+            font-weight: 600;
+            text-align: center;
+            padding: 5px;
+            background: #e0f2fe;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+        
+        .customization-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .customization-modal {
+            background: white;
+            border-radius: 12px;
+            width: 450px;
+            max-width: 90%;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .customization-modal-header {
+            margin-bottom: 20px;
+            text-align: center;
+            color: #9d174d;
+        }
+        
+        .customization-section {
+            margin-bottom: 20px;
+        }
+        
+        .customization-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #9d174d;
+        }
+        
+        .sugar-options, .topping-options {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .sugar-option, .topping-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background 0.3s;
+            width: 30%;
+            margin-bottom: 10px;
+        }
+        
+        .sugar-option:hover, .topping-option:hover {
+            background: #fdf2f8;
+        }
+        
+        .sugar-option.selected, .topping-option.selected {
+            background: #fce7f3;
+            border: 1px solid #f9a8d4;
+        }
+        
+        .sugar-percentage, .topping-name {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .sugar-label, .topping-price {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            padding: 15px 20px 20px;
+        }
+        
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .confirm-btn {
+            background: #db2777;
+            color: white;
+        }
+        
+        .confirm-btn:hover {
+            background: #be185d;
+        }
+        
+        .cancel-btn {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+        
+        .cancel-btn:hover {
+            background: #e5e7eb;
+        }
+        
+        .reports-section {
+            display: none;
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .reports-section.active {
+            display: block;
+        }
+        
+        .report-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .report-control {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .report-control label {
+            font-weight: 500;
+            color: #9d174d;
+        }
+        
+        .report-control select, .report-control input {
+            padding: 10px 15px;
+            border: 1px solid #fbcfe8;
+            border-radius: 8px;
+            background: #fdf2f8;
+        }
+        
+        .report-btn {
+            padding: 10px 20px;
+            background: #db2777;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            align-self: flex-end;
+        }
+        
+        .report-btn:hover {
+            background: #be185d;
+        }
+        
+        .report-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #fbcfe8;
+        }
+        
+        .summary-card h3 {
+            font-size: 16px;
+            color: #9d174d;
+            margin-bottom: 10px;
+        }
+        
+        .summary-card .value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #db2777;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #fbcfe8;
+        }
+        
+        .chart-title {
+            font-size: 18px;
+            color: #9d174d;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+        }
+        
+        .orders-table th, .orders-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #fdf2f8;
+        }
+        
+        .orders-table th {
+            background: #fce7f3;
+            color: #9d174d;
+            font-weight: 600;
+        }
+        
+        .orders-table tr:hover {
+            background: #fdf2f8;
+        }
+        
+        .no-orders {
+            text-align: center;
+            padding: 30px;
+            color: #888;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .receipt-modal {
+            background: white;
+            border-radius: 12px;
+            width: 400px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .receipt-header {
+            background: linear-gradient(135deg, #db2777 0%, #ec4899 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            font-family: 'Khmer OS', 'Moul', sans-serif;
+        }
+        
+        .receipt-body {
+            padding: 20px;
+        }
+        
+        .receipt-info {
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 1px dashed #ddd;
+            padding-bottom: 15px;
+        }
+        
+        .receipt-items {
+            margin-bottom: 15px;
+            width: 100%;
+        }
+        
+        .receipt-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+        
+        .receipt-item-details {
+            flex: 1;
+        }
+        
+        .receipt-sugar, .receipt-topping {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .receipt-totals {
+            border-top: 1px dashed #ddd;
+            padding-top: 15px;
+            margin-bottom: 15px;
+            margin-top: 15px;
+        }
+        
+        .receipt-total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .receipt-footer {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            padding: 15px 0;
+            border-top: 1px dashed #ddd;
+        }
+        
+        .receipt-buttons {
+            display: flex;
+            gap: 10px;
+            padding: 15px 20px 20px;
+        }
+        
+        .print-btn, .close-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .print-btn {
+            background: #db2777;
+            color: white;
+        }
+        
+        .print-btn:hover {
+            background: #be185d;
+        }
+        
+        .close-btn {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+        
+        .close-btn:hover {
+            background: #e5e7eb;
+        }
+        
+        .language-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        
+        .language-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .language-flag {
+            font-size: 18px;
+        }
+        
+        .khmer-price {
+            font-family: 'Khmer OS', 'Moul', sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            color: #9d174d;
+            margin-top: 5px;
+        }
+        
+        .khmer-price-receipt {
+            font-family: 'Khmer OS', 'Moul', sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            color: #9d174d;
+        }
+        
+        .khmer-total {
+            font-family: 'Khmer OS', 'Moul', sans-serif;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .menu-item p {
+            color: #db2777;
+            font-weight: 600;
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .usd-price {
+            font-size: 14px;
+            color: #be185d;
+        }
+        
+        .cart-item-price {
+            font-weight: 600;
+            color: #db2777;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            text-align: right;
+        }
+        
+        .receipt-item-price {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        
+        .price-toggle {
+            margin-left: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        
+        .price-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .discount-row {
+            color: #0ea5e9;
+            font-weight: 600;
+        }
+        
+        .printer-config-modal {
+            background: white;
+            border-radius: 12px;
+            width: 500px;
+            max-width: 90%;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .printer-config-section {
+            margin-bottom: 20px;
+        }
+        
+        .printer-config-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #9d174d;
+        }
+        
+        .printer-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #fbcfe8;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .printer-test-btn {
+            padding: 10px 15px;
+            background: #0ea5e9;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-right: 10px;
+        }
+        
+        .printer-test-btn:hover {
+            background: #0284c7;
+        }
+        
+        .printer-status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: 500;
+        }
+        
+        .printer-status.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        
+        .printer-status.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+        
+        .printer-help {
+            background: #f0f9ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 14px;
+            border-left: 4px solid #0ea5e9;
+        }
+        
+        .printer-help h4 {
+            margin-bottom: 8px;
+            color: #0c4a6e;
+        }
+        
+        .printer-help ol {
+            margin-left: 20px;
+        }
+        
+        .printer-help li {
+            margin-bottom: 5px;
+        }
+
+        .printer-config-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            white-space: nowrap;
+            border: none;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .printer-config-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .global-status {
+            padding: 10px 20px;
+            text-align: center;
+            font-weight: 500;
+            border-bottom: 1px solid #fbcfe8;
+        }
+        
+        .global-status.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .global-status.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .global-status.info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        @media print {
+            body * {
+                visibility: hidden;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            
+            .receipt-modal, 
+            .receipt-modal * {
+                visibility: visible;
+            }
+            
+            .receipt-modal {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 80mm !important;
+                max-width: 80mm !important;
+                min-width: 80mm !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+                border-radius: 0 !important;
+                font-size: 12px !important;
+                line-height: 1.2 !important;
+            }
+            
+            .receipt-header {
+                padding: 10px !important;
+                font-size: 14px !important;
+            }
+            
+            .receipt-body {
+                padding: 10px !important;
+            }
+            
+            .receipt-info {
+                margin-bottom: 10px !important;
+                padding-bottom: 8px !important;
+                font-size: 11px !important;
+            }
+            
+            .receipt-item {
+                margin-bottom: 5px !important;
+                font-size: 11px !important;
+            }
+            
+            .receipt-sugar, .receipt-topping {
+                font-size: 10px !important;
+            }
+            
+            .receipt-totals {
+                padding-top: 8px !important;
+                margin: 10px 0 !important;
+            }
+            
+            .receipt-footer {
+                padding: 10px 0 !important;
+                font-size: 11px !important;
+            }
+            
+            .receipt-buttons,
+            .no-print {
+                display: none !important;
+            }
+            
+            .receipt-item-details,
+            .receipt-item-price {
+                font-family: 'Courier New', monospace !important;
+            }
+            
+            page-break-inside: avoid;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 2fr 1fr;
+            }
+            
+            .menu-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .report-summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard {
+                height: auto;
+            }
+            
+            .slider-container {
+                height: 150px;
+            }
+            
+            .report-summary {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .nav-tab {
+                flex: 1;
+                text-align: center;
+                padding: 12px;
+            }
+            
+            .receipt-modal {
+                width: 95%;
+            }
+            
+            .sugar-options, .topping-options {
+                justify-content: center;
+            }
+            
+            .sugar-option, .topping-option {
+                width: 45%;
+                margin-bottom: 10px;
+            }
+            
+            .price-toggle {
+                margin-top: 10px;
+                margin-left: 0;
+            }
+            
+            .discount-controls {
+                flex-direction: column;
+            }
+            
+            .printer-config-btn {
+                margin-top: 10px;
+                margin-left: 0;
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #fdf2f8;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #fbcfe8;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #f9a8d4;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Moul&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hanuman:wght@300;400;700&display=swap');
+        .khmer-font {
+            font-family: 'Hanuman', serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        const EXCHANGE_RATE = 4000;
+
+        const usdToKhr = (usd) => {
+            return Math.round(usd * EXCHANGE_RATE);
+        };
+
+        const formatKhrPrice = (price) => {
+            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "៛";
+        };
+
+        const toppingOptions = [
+            { id: 1, name: "Snow Pearls", nameKh: "គុជព្រិល", price: 0.50 },
+            { id: 2, name: "Honey Jack", nameKh: "គុជទឹកឃ្មុំ", price: 0.50 },
+            { id: 3, name: "Pearls", nameKh: "គុជខ្មៅ", price: 0.50 },
+            { id: 4, name: "Honey Jack", nameKh: "គុជទឹកឃ្មុំ", price: 0.50 },
+            { id: 5, name: "Brown Sugar Pearls", nameKh: "គុជស្ករត្នោត", price: 0.50 },
+            { id: 6, name: "Cream", nameKh: "គ្រីម", price: 0.50 }
+        ];
+
+        const menuData = {
+            'HOT SALES': [
+                { id: 1, name: "Egg Coffee", nameKh: "កាហ្វេពងមាន់", price: 4.50, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185400870518/detail/3766b6f6eaba4891bebd9fde7141dac0_1743326057978577924.webp" },
+                { id: 2, name: "Mocha", nameKh: "ម៉ូកា", price: 4.00, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185400210346/detail/98bc89b6cead43d68aa8ee8d568e6702_1743326057925986955.webp" },
+                { id: 3, name: "Coffee Latte", nameKh: "កាហ្វេឡាតេ", price: 3.75, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185400132834/detail/61f42574637c43b5b43917866acf5c96_1743326058008760193.webp" },
+                { id: 4, name: "Cappuccino", nameKh: "កាពូស៊ីណី", price: 3.75, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185401215610/detail/8fde6a9b8d7b408c9dd68a31a3e9f2f7_1743326058071300227.webp" },
+                { id: 5, name: "Coconut Cream Latte", nameKh: "កាហ្វេដូងគ្រីម", price: 4.25, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185404772720/detail/8802d46d398e4a4fa029bed3d7285d07_1743326058048061389.webp" },
+                { id: 6, name: "Passion Cream", nameKh: "ផាសសិនគ្រីម", price: 4.50, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185401004116/detail/a9c41dfc878a430e970b392cc7a99313_1743326058107158839.webp" }
+            ],
+            'COFFEE': [
+                { id: 7, name: "Ice Espresso", nameKh: "កាហ្វេទឹកដោះគោ", price: 3.50, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185401373335/detail/3750a0778b6f47fc8d887bb47ebcb6c7_1743326058114571174.webp" },
+                { id: 8, name: "Americano", nameKh: "កាហ្វេខ្មៅ", price: 3.00, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185405444913/detail/c7259d977999409180313c4a4781bfbc_1743326058146738458.webp" },
+                { id: 9, name: "Black Coffee Honey", nameKh: "កាហ្វេខ្មៅទឹកឃ្មុំ", price: 3.25, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185405908813/detail/8190dc78882a4766994d6d95500f3586_1743326058132293382.webp" },
+                { id: 10, name: "Vanilla Latte", nameKh: "វ៉ាន់នីឡា ឡាតេ", price: 4.00, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185400228558/detail/8cfda4aeb8d34679a1e3d742bdeeeaba_1743326057976112967.webp" },
+                { id: 11, name: "Caramel Latte", nameKh: "ការ៉ាមែលឡាតេ", price: 4.25, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185400829807/detail/3d0eb53d114b410eb3f2a2c6a342577b_1743326058078583691.webp" },
+                { id: 12, name: "Coconut Coffee", nameKh: "កាហ្វេដូងក្រអូប", price: 4.00, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185400228558/detail/8cfda4aeb8d34679a1e3d742bdeeeaba_1743326057976112967.webp" }
+            ],
+            'FRAPPE': [
+                { id: 13, name: "Mocha Frappe", nameKh: "ម៉ូកាក្រឡុក", price: 4.75, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185401043515/detail/d7286edd68a14244a8dffa550d3ac2f5_1743326058058727555.webp" },
+                { id: 14, name: "Vanilla Latte Frappe", nameKh: "វ៉ាន់នីឡាក្រឡុក", price: 4.50, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185403715221/detail/fbe160a73a144de58a267da820aee2c5_1743326058119121945.webp" },
+                { id: 15, name: "Cappuccino Frappe", nameKh: "កាពូស៊ីណូក្រឡុក", price: 4.50, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185400610134/detail/ff9dd6f2b2714392877bef3bc7feced3_1743326057952816904.webp" },
+                { id: 16, name: "Chocolate Frappe", nameKh: "សូកូឡាក្រឡុក", price: 4.75, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185400269375/detail/b20206f65b9b45d9a49accaf4d31e86a_1743326057932335748.webp" },
+                { id: 17, name: "Passion Frappe", nameKh: "ផាសសិនក្រឡុក", price: 4.75, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185401855399/detail/c57c00e931424aa7947abb2e39b91b78_1743326058048819293.webp" },
+                { id: 18, name: "Coconut Frappe", nameKh: "ដូងក្រឡុក", price: 4.50, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185401753605/detail/396077381c8b43558553facbcdf72286_1743326058063252425.webp" },
+                { id: 19, name: "Strawberry Frappe", nameKh: "ស្ត្របឺរីក្រឡុក", price: 4.75, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185401053436/detail/5b9c1bafada84b70afb2cffca88ab320_1743326058042938921.webp" },
+                { id: 20, name: "Matcha Frappe", nameKh: "ម៉ាត់ឆាក្រឡុក", price: 4.75, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185359765196/detail/62f16176507040d5a4051bce874ac90e_1743326057976521543.webp" }
+            ],
+            'MILK TEA': [
+                { id: 21, name: "Royal Milk Tea", nameKh: "តែទឹកដោះគោរ៉ូយ៉ាល់", price: 3.75, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185400829807/detail/3d0eb53d114b410eb3f2a2c6a342577b_1743326058078583691.webp" },
+                { id: 22, name: "Taro Milk", nameKh: "ត្រាវទឹកដោះគោ", price: 4.00, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185405940563/detail/cd68cadf892544898a4d1d6a95b509d4_1743326058145277322.webp" },
+                { id: 23, name: "Milk Green Tea", nameKh: "តែបៃតងទឹកដោះគោ", price: 3.75, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185402136970/detail/b9d904e4eec04a01abf7a9e5cd6787e5_1743326058085453833.webp" },
+                { id: 24, name: "Red Milk Tea", nameKh: "តែថៃទឹកដោះគោ", price: 3.75, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185400187186/detail/b0420ef3da034cf0b6de4a9d7ff6e3e4_1743326057982204968.webp" },
+                { id: 25, name: "Vanilla Milk Tea", nameKh: "តែវ៉ាន់នីឡាទឹកដោះគោ", price: 4.00, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185359876051/detail/e7a6ffc5639142a5bc10ae4a5ddc6f1e_1743326057945430031.webp" },
+                { id: 26, name: "Strawberry Milk Tea", nameKh: "តែស្ត្របឺរីទឹកដោះគោ", price: 4.25, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185401216576/detail/f6a130b169864292bc910e8434471df1_1743326058039113241.webp" },
+                { id: 27, name: "Honey Milk Tea", nameKh: "តែទឹកឃ្មុំទឹកដោះគោ", price: 4.00, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185400502448/detail/8413990edca149d0b4731e472daada7b_1743326057978493320.webp" },
+                { id: 28, name: "Cocao", nameKh: "កាកាវ", price: 3.50, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185405270500/detail/610d853449d84ab385181ddb16396f51_1743326058132415260.webp" },
+                { id: 29, name: "Coffee Milk Tea", nameKh: "តែកាហ្វេទឹកដោះគោ", price: 4.00, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185405624077/detail/06b03dc8326746578be6809c29801800_1743326058162845363.webp" },
+                { id: 30, name: "Coffee Mocha", nameKh: "កាហ្វេម៉ូកា", price: 4.25, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185400210346/detail/98bc89b6cead43d68aa8ee8d568e6702_1743326057925986955.webp" },
+                { id: 31, name: "Caramel Milk Tea", nameKh: "ការ៉ាម៉ែលទឹកដោះគោ", price: 4.25, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185400829807/detail/3d0eb53d114b410eb3f2a2c6a342577b_1743326058078583691.webp" },
+                { id: 32, name: "Melons Milk Tea", nameKh: "មុីឡុងទឹកដោះគោ", price: 4.25, image: "https://food-cms.grab.com/compressed_webp/items/KHITE2025091209173772859/detail/menueditor_item_dce3c5daf36c4ee89b1f22f68d316b16_1757668609048069529.webp" }
+            ],
+            'OTHER': [
+                { id: 33, name: "Chocolate", nameKh: "សូកូឡា", price: 3.75, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185359855137/detail/2b565e77d29b4563b5f828714e2e96f5_1743326057994156337.webp" },
+                { id: 34, name: "Strawberry Matcha", nameKh: "ស្រ្តបឺរីម៉ាត់ឆា", price: 4.50, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185400234373/detail/039291709e5f4329ac537eaa0e75b25b_1743326057969675134.webp" },
+                { id: 35, name: "Matcha Latte", nameKh: "ម៉ាត់ឆាឡាតេ", price: 4.25, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185359765196/detail/62f16176507040d5a4051bce874ac90e_1743326057976521543.webp" },
+                { id: 36, name: "Passion Milk", nameKh: "ផាសសិនទឹកដោះគោ", price: 4.25, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185401879059/detail/ecc7e669dabd4c4fa3e3aa3634e9f2bb_1743326058059963640.webp" },
+                { id: 37, name: "Cacao Fresh Milk", nameKh: "កាកាវទឹកដោះគោស្រស់", price: 4.00, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185405270500/detail/610d853449d84ab385181ddb16396f51_1743326058132415260.webp" },
+                { id: 38, name: "Strawberry Fresh Milk", nameKh: "ស្រ្តបឺរីទឹកដោះគោស្រស់", price: 4.25, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185400234373/detail/039291709e5f4329ac537eaa0e75b25b_1743326057969675134.webp" },
+                { id: 39, name: "Royall Brown Sugar", nameKh: "ទឹកដោះគោស្រស់ស្ករត្នោត", price: 4.50, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185400829807/detail/3d0eb53d114b410eb3f2a2c6a342577b_1743326058078583691.webp" },
+                { id: 40, name: "Passion Fresh", nameKh: "ផាសសិនស្រស់", price: 4.25, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185400906956/detail/3b559284e076434baa554296221bd0af_1743326057996569531.webp" },
+                { id: 41, name: "Honey Lemon Tea", nameKh: "តែក្រូចឆ្មាទឹកឃ្មុំ", price: 3.75, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185401612711/detail/e9f219da794f4da98a4ce153184625f2_1743326058040387728.webp" },
+                { id: 42, name: "Ovaltine", nameKh: "អូវ៉ាន់ទីន", price: 3.50, image: "https://food-cms.grab.com/compressed_webp/items/KHITE2025091209155305200/detail/menueditor_item_1186800782b54644ab9b44c6cd5b904e_1757668358086873289.webp" },
+                { id: 44, name: "Nescafe", nameKh: "ណេសកាហ្វេ", price: 3.25, image: "https://food-cms.grab.com/compressed_webp/items/KHITEA20250329185401373335/detail/3750a0778b6f47fc8d887bb47ebcb6c7_1743326058114571174.webp" },
+                { id: 45, name: "Strawberry Tea", nameKh: "តែស្រ្តបឺរី", price: 3.75, image: "https://food-cms.grab.com/compressed_webp/items/KHITE2025091209200023557/detail/menueditor_item_8ac3d0f8e4fa449a941d673bf9d0517a_1757668771983774712.webp" },
+                { id: 46, name: "Lychee Tea", nameKh: "តែគូលេន", price: 3.75, image: "https://food-cms.grab.com/compressed_webp/items/KHITE2025091209190694798/detail/menueditor_item_55fb5878a19b4453991b5b68b7bde3c7_1757668699563770244.webp" },
+                { id: 47, name: "Melon Tea", nameKh: "តែមីឡូន", price: 3.75, image: "https://food-cms.grab.com/compressed_webp/items/KHITE2025091209173772859/detail/menueditor_item_dce3c5daf36c4ee89b1f22f68d316b16_1757668609048069529.webp" }
+            ],
+            'SODA': [
+                { id: 48, name: "Strawberry Soda", nameKh: "ស្រ្តបឺរីសូដា", price: 3.75, image: "https://z-p3-scontent.fpnh18-3.fna.fbcdn.net/v/t39.30808-6/486288010_1112876617519234_5496247654139844088_n.jpg?stp=c194.0.1053.1053a_dst-jpg_s206x206_tt6&_nc_cat=101&ccb=1-7&_nc_sid=50ad20&_nc_eui2=AeFzMT5l8pJNbwkxvjHAFwrgJ1s3lyR1h3onWzeXJHWHeoytpedRUDutCgKLiTZRjj_0YU31Qn7eN3gbrHGmjEwx&_nc_ohc=OFtSXfRPBkUQ7kNvwFbwamG&_nc_oc=AdnLGqxH7ESdCwSPEpWDZUhuBjH3noESGp6p6jPEo6pC-Eoo9Bk123FUzK7qO23tX84&_nc_zt=23&_nc_ht=z-p3-scontent.fpnh18-3.fna&_nc_gid=FBg7f8AQS4u2bTTWEbGM0A&oh=00_AfZ68Y-fm5vlzpaX6DQez8dXfCSDMi-hB-fkA8NZs5QWEA&oe=68D4177A" },
+                { id: 49, name: "Passion Soda", nameKh: "ផាសសិនសូដា", price: 3.75, image: "https://z-p3-scontent.fpnh18-3.fna.fbcdn.net/v/t39.30808-6/485966615_1112876004185962_8218854233391420061_n.jpg?stp=c194.0.1053.1053a_dst-jpg_s206x206_tt6&_nc_cat=106&ccb=1-7&_nc_sid=50ad20&_nc_eui2=AeHLYRvHP1imUPSZ8V8RZYbvhYmVVv06-JeFiZVW_Tr4l6AZycCZpkrpZuRW_L3DwnPT6lDuVzInJgmeKGUuDM-R&_nc_ohc=aIWOj6lO3dIQ7kNvwHyOz4t&_nc_oc=AdmADOmnwiLlCgDUCnO1_TsqsV1t1Po4CV6jhkF5deDhDYGvKpEZFZw9qWL_c2c3l7Y&_nc_zt=23&_nc_ht=z-p3-scontent.fpnh18-3.fna&_nc_gid=FBg7f8AQS4u2bTTWEbGM0A&oh=00_Afbf3rUkXS88tkYW0aagoNww7xQcDAHzMNtMQldOV-TI2A&oe=68D408AC" },
+                { id: 50, name: "Bule Hawaii Soda", nameKh: "ប្លូហាវៃសូដា", price: 4.00, image: "https://food-cms.grab.com/compressed_webp/items/KHITE2025091209382600762/detail/menueditor_item_61a275026c684d099ba3e6cdb0c31812_1757669883580949032.webp" },
+                { id: 51, name: "Lychee Soda", nameKh: "គូលេនសូដា", price: 3.75, image: "https://food-cms.grab.com/compressed_webp/items/KHITE2025091209190694798/detail/menueditor_item_55fb5878a19b4453991b5b68b7bde3c7_1757668699563770244.webp" },
+                { id: 52, name: "Melon Soda", nameKh: "មីឡូនសូដា", price: 3.75, image: "https://food-cms.grab.com/compressed_webp/items/KHITE2025091209173772859/detail/menueditor_item_dce3c5daf36c4ee89b1f22f68d316b16_1757668609048069529.webp" }
+            ]
+        };
+
+        const generateOrderHistory = () => {
+            return [];
+        };
+
+        const orderHistory = generateOrderHistory();
+
+        const translations = {
+            en: {
+                pointOfSale: "Point of Sale",
+                reports: "Reports",
+                hotSales: "HOT SALES",
+                coffee: "COFFEE",
+                frappe: "FRAPPE",
+                milkTea: "MILK TEA",
+                other: "OTHER",
+                soda: "SODA",
+                sugarLevel: "Sugar Level",
+                topping: "Topping",
+                snowPearls: "Snow Pearls",
+                honeyJack: "Honey Jack",
+                cream: "Cream",
+                enterSale: "Enter Sale",
+                order: "Order",
+                items: "items",
+                noItems: "No items in cart",
+                subtotal: "Subtotal",
+                total: "Total",
+                pay: "Pay",
+                addNotes: "Add your notes here...",
+                specialInstructions: "Special instructions or notes for the order",
+                customize: "Customize",
+                noSugar: "No Sugar",
+                light: "Light",
+                mediumLight: "Medium Light",
+                medium: "Medium",
+                standard: "Standard",
+                extra: "Extra",
+                cancel: "Cancel",
+                confirm: "Confirm",
+                reportType: "Report Type",
+                dailyReport: "Daily Report",
+                monthlyReport: "Monthly Report",
+                selectDate: "Select Date",
+                selectMonth: "Select Month",
+                exportReport: "Export Report",
+                totalSales: "Total Sales",
+                totalOrders: "Total Orders",
+                averageOrder: "Average Order",
+                productsSold: "Products Sold",
+                dailySalesReport: "Daily Sales Report",
+                monthlySalesReport: "Monthly Sales Report",
+                salesByCategory: "Sales by Category",
+                orderDetails: "Order Details",
+                orderId: "Order ID",
+                dateTime: "Date & Time",
+                status: "Status",
+                noOrders: "No orders found",
+                royalTeaCafe: "Royal Tea&Cafe",
+                orderReceipt: "Order Receipt",
+                thankYou: "Thank you for your visit!",
+                comeAgain: "Please come again",
+                print: "Print",
+                close: "Close",
+                notes: "Notes",
+                showKhrPrices: "Show KHR",
+                showUsdPrices: "Show USD",
+                discount: "Discount",
+                applyDiscount: "Apply Discount",
+                removeDiscount: "Remove Discount",
+                discountAmount: "Discount Amount",
+                discountType: "Discount Type",
+                percentage: "Percentage",
+                fixedAmount: "Fixed Amount",
+                discountApplied: "Discount Applied",
+                enterDiscount: "Enter discount amount",
+                searchProducts: "Search products...",
+                searchResults: "Search results",
+                showingResultsFor: "Showing results for",
+                noResultsFound: "No products found",
+                clearSearch: "Clear search",
+                printerSettings: "Printer Settings",
+                printerIpAddress: "Printer IP Address",
+                printerPort: "Printer Port",
+                testPrinter: "Test Printer",
+                savePrinterSettings: "Save Printer Settings",
+                printerConfiguration: "Printer Configuration",
+                printerHelp: "Printer Setup Help",
+                printerHelpSteps: "To connect your Star TSP100III printer:",
+                printerStep1: "Connect your printer to the same Wi-Fi network as your iPad",
+                printerStep2: "Find your printer's IP address (print a test page from the printer)",
+                printerStep3: "Enter the IP address above (usually like 192.168.1.100)",
+                printerStep4: "Click 'Test Printer' to verify the connection",
+                printerStep5: "Save the settings and start printing!",
+                printerTestSuccess: "Printer connection successful!",
+                printerTestError: "Failed to connect to printer. Please check the IP address and network connection.",
+                printerSettingsSaved: "Printer settings saved successfully!",
+                configurePrinter: "Configure Printer"
+            },
+            km: {
+                pointOfSale: "ចំណុចលក់",
+                reports: "របាយការណ៍",
+                hotSales: "លក់ដាច់",
+                coffee: "កាហ្វេ",
+                frappe: "ក្រឡុក",
+                milkTea: "តែទឹកដោះគោ",
+                other: "ផ្សេងៗ",
+                soda: "សូដា",
+                sugarLevel: "កម្រិតជាតិស្ករ",
+                topping: "គុជ",
+                snowPearls: "គុជព្រិល",
+                honeyJack: "គុជទឹកឃ្មុំ",
+                cream: "គ្រីម",
+                enterSale: "បញ្ចូលការលក់",
+                order: "ការកម្មង់",
+                items: "ធាតុ",
+                noItems: "មិនមានធាតុក្នុងរទេះ",
+                subtotal: "សរុបរង",
+                total: "សរុប",
+                pay: "បង់ប្រាក់",
+                addNotes: "បន្ថែមកំណត់ចំណាំរបស់អ្នកនៅទីនេះ...",
+                specialInstructions: "ការណែនាំពិសេស ឬកំណត់ចំណាំសម្រាប់ការកម្មង់",
+                customize: "ប្ដូរ",
+                noSugar: "គ្មានស្ករ",
+                light: "ស្រាល",
+                mediumLight: "មធ្យមស្រាល",
+                medium: "មធ្យម",
+                standard: "ស្តង់ដារ",
+                extra: "បន្ថែម",
+                cancel: "បោះបង់",
+                confirm: "បញ្ជាក់",
+                reportType: "ប្រភេទរបាយការណ៍",
+                dailyReport: "របាយការណ៍ប្រចាំថ្ងៃ",
+                monthlyReport: "របាយការណ៍ប្រចាំខែ",
+                selectDate: "ជ្រើសរើសកាលបរិច្ឆេទ",
+                selectMonth: "ជ្រើសរើសខែ",
+                exportReport: "នាំចេញរបាយការណ៍",
+                totalSales: "ការលក់សរុប",
+                totalOrders: "ការកម្មង់សរុប",
+                averageOrder: "ការកម្មង់មធ្យម",
+                productsSold: "ផលិតផលដែលបានលក់",
+                dailySalesReport: "របាយការណ៍ការលក់ប្រចាំថ្ងៃ",
+                monthlySalesReport: "របាយការណ៍ការលក់ប្រចាំខែ",
+                salesByCategory: "ការលក់តាមប្រភេទ",
+                orderDetails: "ព័ត៌មានលម្អិតអំពីការកម្មង់",
+                orderId: "លេខសម្គាល់ការកម្មង់",
+                dateTime: "កាលបរិច្ឆេទ & ពេលវេលា",
+                status: "ស្ថានភាព",
+                noOrders: "មិនមានការកម្មង់",
+                royalTeaCafe: "Royal Tea&Cafe",
+                orderReceipt: "វិក្កយបត្រកម្មង់",
+                thankYou: "សូមអរគុណចំពោះការគ្រាំទ្រហាងរបស់យើងខ្ញុំ សូមអញ្ជើញមកម្ដេងទៀត!",
+                comeAgain: "ទំនិញដែលបានទិញហើយមិនអាចប្ដូរឬបង្វិលសងវិញឡើយ",
+                print: "បោះពុម្ព",
+                close: "បិទ",
+                notes: "កំណត់ចំណាំ",
+                showKhrPrices: "បង្ហាញជារៀល",
+                showUsdPrices: "បង្ហាញជាដុល្លារ",
+                discount: "បញ្ចុះតម្លៃ",
+                applyDiscount: "អនុវត្តបញ្ចុះតម្លៃ",
+                removeDiscount: "ដកបញ្ចុះតម្លៃ",
+                discountAmount: "ចំនួនបញ្ចុះតម្លៃ",
+                discountType: "ប្រភេទបញ្ចុះតម្លៃ",
+                percentage: "ភាគរយ",
+                fixedAmount: "ចំនួនថេរ",
+                discountApplied: "បញ្ចុះតម្លៃត្រូវបានអនុវត្ត",
+                enterDiscount: "បញ្ចូលចំនួនបញ្ចុះតម្លៃ",
+                searchProducts: "ស្វែងរកផលិតផល...",
+                searchResults: "លទ្ធផលស្វែងរក",
+                showingResultsFor: "បង្ហាញលទ្ធផលសម្រាប់",
+                noResultsFound: "មិនមានផលិតផល",
+                clearSearch: "លុបការស្វែងរក",
+                printerSettings: "ការកំណត់ម៉ាស៊ីនបោះពុម្ព",
+                printerIpAddress: "អាសយដ្ឋាន IP ម៉ាស៊ីនបោះពុម្ព",
+                printerPort: "ច្រកម៉ាស៊ីនបោះពុម្ព",
+                testPrinter: "សាកល្បងម៉ាស៊ីនបោះពុម្ព",
+                savePrinterSettings: "រក្សាទុកការកំណត់ម៉ាស៊ីនបោះពុម្ព",
+                printerConfiguration: "ការកំណត់ម៉ាស៊ីនបោះពុម្ព",
+                printerHelp: "ជំនួយការដំឡើងម៉ាស៊ីនបោះពុម្ព",
+                printerHelpSteps: "ដើម្បីតភ្ជាប់ម៉ាស៊ីនបោះពុម្ព Star TSP100III របស់អ្នក៖",
+                printerStep1: "តភ្ជាប់ម៉ាស៊ីនបោះពុម្ពរបស់អ្នកទៅបណ្តាញ Wi-Fi ដូចគ្នានឹង iPad របស់អ្នក",
+                printerStep2: "ស្វែងរកអាសយដ្ឋាន IP របស់ម៉ាស៊ីនបោះពុម្ព (បោះពុម្ពទំព័រសាកល្បងពីម៉ាស៊ីនបោះពុម្ព)",
+                printerStep3: "បញ្ចូលអាសយដ្ឋាន IP ខាងលើ (ជាទូទៅដូចជា 192.168.1.100)",
+                printerStep4: "ចុច 'សាកល្បងម៉ាស៊ីនបោះពុម្ព' ដើម្បីផ្ទៀងផ្ទាត់ការតភ្ជាប់",
+                printerStep5: "រក្សាទុកការកំណត់ និងចាប់ផ្តើមបោះពុម្ព!",
+                printerTestSuccess: "ការតភ្ជាប់ម៉ាស៊ីនបោះពុម្ពជោគជ័យ!",
+                printerTestError: "មិនអាចតភ្ជាប់ទៅម៉ាស៊ីនបោះពុម្ព។ សូមពិនិត្យមើលអាសយដ្ឋាន IP និងការតភ្ជាប់បណ្តាញ។",
+                printerSettingsSaved: "ការកំណត់ម៉ាស៊ីនបោះពុម្ពត្រូវបានរក្សាទុកដោយជោគជ័យ!",
+                configurePrinter: "កំណត់ម៉ាស៊ីនបោះពុម្ព"
+            }
+        };
+
+        // TSP100III Network Printing Function
+        const printToTSP100III = async (cart, orderNumber, notes, discount, language, printerSettings) => {
+            try {
+                const t = translations[language];
+                
+                if (!printerSettings || !printerSettings.ipAddress) {
+                    console.error('Printer settings not configured');
+                    return false;
+                }
+
+                // Calculate totals
+                const subtotal = cart.reduce((sum, item) => {
+                    return sum + (item.price + (item.topping ? item.topping.price : 0)) * item.quantity;
+                }, 0);
+                
+                const discountAmount = discount ? (discount.type === 'percentage' ? subtotal * discount.amount / 100 : discount.amount) : 0;
+                const total = Math.max(0, subtotal - discountAmount);
+                
+                // Create receipt content
+                let receiptContent = '';
+                
+                // Header
+                receiptContent += '================================\n';
+                receiptContent += '      ROYAL TEA & CAFE\n';
+                receiptContent += '================================\n';
+                receiptContent += `Order: #${orderNumber}\n`;
+                receiptContent += `Date: ${new Date().toLocaleDateString()}\n`;
+                receiptContent += `Time: ${new Date().toLocaleTimeString()}\n`;
+                receiptContent += '--------------------------------\n\n';
+                
+                // Items
+                cart.forEach(item => {
+                    const itemName = language === 'en' ? item.name : item.nameKh;
+                    const itemTotal = (item.price + (item.topping ? item.topping.price : 0)) * item.quantity;
+                    
+                    receiptContent += `${item.quantity}x ${itemName}\n`;
+                    if (item.sugarLevel) {
+                        receiptContent += `  Sugar: ${item.sugarLevel}\n`;
+                    }
+                    if (item.topping) {
+                        const toppingName = language === 'en' ? item.topping.name : item.topping.nameKh;
+                        receiptContent += `  + ${toppingName}\n`;
+                    }
+                    receiptContent += `  $${itemTotal.toFixed(2)}\n\n`;
+                });
+                
+                // Totals
+                receiptContent += '--------------------------------\n';
+                receiptContent += `Subtotal: $${subtotal.toFixed(2)}\n`;
+                
+                if (discountAmount > 0) {
+                    receiptContent += `Discount: -$${discountAmount.toFixed(2)}\n`;
+                }
+                
+                receiptContent += `Total: $${total.toFixed(2)}\n`;
+                receiptContent += '--------------------------------\n\n';
+                
+                // Notes
+                if (notes) {
+                    receiptContent += `Notes: ${notes}\n\n`;
+                }
+                
+                // Footer
+                receiptContent += 'Thank you for your visit!\n';
+                receiptContent += 'Please come again!\n';
+                receiptContent += '================================\n';
+                
+                // For TSP100III, we'll use a simple HTTP request approach
+                // Note: This requires the printer to have a web server enabled
+                try {
+                    // Method 1: Try direct HTTP POST to printer
+                    const response = await fetch(`http://${printerSettings.ipAddress}:${printerSettings.port || 80}/`, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'text/plain',
+                        },
+                        body: receiptContent
+                    });
+                    
+                    console.log('Receipt sent to printer');
+                    return true;
+                } catch (error) {
+                    console.log('Direct HTTP failed, trying alternative method');
+                    
+                    // Method 2: Create a simple image and try to print
+                    try {
+                        // Create a hidden iframe with the receipt content
+                        const iframe = document.createElement('iframe');
+                        iframe.style.display = 'none';
+                        iframe.srcdoc = `
+                            <html>
+                                <head>
+                                    <title>Receipt</title>
+                                    <style>
+                                        body { 
+                                            font-family: 'Courier New', monospace; 
+                                            font-size: 12px; 
+                                            width: 80mm; 
+                                            padding: 10px; 
+                                            line-height: 1.2;
+                                        }
+                                        .header { text-align: center; font-weight: bold; }
+                                        .line { border-bottom: 1px dashed #000; margin: 5px 0; }
+                                    </style>
+                                </head>
+                                <body>
+                                    <div class="header">ROYAL TEA & CAFE</div>
+                                    <div>Order: #${orderNumber}</div>
+                                    <div>Date: ${new Date().toLocaleDateString()}</div>
+                                    <div>Time: ${new Date().toLocaleTimeString()}</div>
+                                    <div class="line"></div>
+                                    ${cart.map(item => {
+                                        const itemName = language === 'en' ? item.name : item.nameKh;
+                                        const itemTotal = (item.price + (item.topping ? item.topping.price : 0)) * item.quantity;
+                                        return `
+                                            <div>${item.quantity}x ${itemName} - $${itemTotal.toFixed(2)}</div>
+                                            ${item.sugarLevel ? `<div>  Sugar: ${item.sugarLevel}</div>` : ''}
+                                            ${item.topping ? `<div>  + ${language === 'en' ? item.topping.name : item.topping.nameKh}</div>` : ''}
+                                        `;
+                                    }).join('')}
+                                    <div class="line"></div>
+                                    <div>Subtotal: $${subtotal.toFixed(2)}</div>
+                                    ${discountAmount > 0 ? `<div>Discount: -$${discountAmount.toFixed(2)}</div>` : ''}
+                                    <div><strong>Total: $${total.toFixed(2)}</strong></div>
+                                    <div class="line"></div>
+                                    <div style="text-align: center;">Thank you for your visit!</div>
+                                    <div style="text-align: center;">Please come again!</div>
+                                </body>
+                            </html>
+                        `;
+                        
+                        document.body.appendChild(iframe);
+                        
+                        setTimeout(() => {
+                            iframe.contentWindow.print();
+                            setTimeout(() => document.body.removeChild(iframe), 1000);
+                        }, 500);
+                        
+                        return true;
+                    } catch (fallbackError) {
+                        console.error('All printing methods failed:', fallbackError);
+                        return false;
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Print error:', error);
+                return false;
+            }
+        };
+
+        // Test printer connection
+        const testPrinterConnection = async (printerSettings) => {
+            try {
+                if (!printerSettings.ipAddress) {
+                    return { success: false, message: 'Please enter printer IP address' };
+                }
+
+                // Try to fetch the printer's status page
+                const testUrl = `http://${printerSettings.ipAddress}:${printerSettings.port || 80}/`;
+                const response = await fetch(testUrl, { 
+                    mode: 'no-cors',
+                    method: 'GET'
+                });
+                
+                return { success: true, message: 'Printer connection successful!' };
+                
+            } catch (error) {
+                return { 
+                    success: false, 
+                    message: 'Cannot connect to printer. Please check IP address and network connection.' 
+                };
+            }
+        };
+
+        const ImageSlider = () => {
+            const [currentSlide, setCurrentSlide] = useState(0);
+            
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    setCurrentSlide(prev => (prev + 1) % 3);
+                }, 4000);
+                
+                return () => clearInterval(interval);
+            }, []);
+            
+            const goToSlide = (index) => {
+                setCurrentSlide(index);
+            };
+            
+            return (
+                <div className="slider-container">
+                    <div className="slider" style={{ transform: `translateX(-${currentSlide * 33.33}%)` }}>
+                        <div className="slide slide-1">
+                            <div></div>
+                        </div>
+                        <div className="slide slide-2">
+                            <div></div>
+                        </div>
+                        <div className="slide slide-3">
+                            <div></div>
+                        </div>
+                    </div>
+                    <div className="slider-nav">
+                        {[0, 1, 2].map(index => (
+                            <div 
+                                key={index}
+                                className={`slider-dot ${currentSlide === index ? 'active' : ''}`}
+                                onClick={() => goToSlide(index)}
+                            />
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const CustomizationModal = ({ item, onConfirm, onCancel, language, showKhrPrices }) => {
+            const [selectedSugar, setSelectedSugar] = useState('100%');
+            const [selectedTopping, setSelectedTopping] = useState(null);
+            
+            const sugarOptions = [
+                { percentage: '0%', label: language === 'en' ? 'No Sugar' : 'គ្មានស្ករ' },
+                { percentage: '25%', label: language === 'en' ? 'Light' : 'ស្រាល' },
+                { percentage: '50%', label: language === 'en' ? 'Medium Light' : 'មធ្យមស្រាល' },
+                { percentage: '75%', label: language === 'en' ? 'Medium' : 'មធ្យម' },
+                { percentage: '100%', label: language === 'en' ? 'Standard' : 'ស្តង់ដារ' },
+                { percentage: '125%', label: language === 'en' ? 'Extra' : 'បន្ថែម' }
+            ];
+            
+            return (
+                <div className="customization-modal-overlay">
+                    <div className="customization-modal">
+                        <div className="customization-modal-header">
+                            <h3>{language === 'en' ? 'Customize' : 'ប្ដូរ'} {item.name}</h3>
+                        </div>
+                        
+                        <div className="customization-section">
+                            <div className="customization-title">{language === 'en' ? 'Sugar Level' : 'កម្រិតជាតិស្ករ'}</div>
+                            <div className="sugar-options">
+                                {sugarOptions.map(option => (
+                                    <div 
+                                        key={option.percentage}
+                                        className={`sugar-option ${selectedSugar === option.percentage ? 'selected' : ''}`}
+                                        onClick={() => setSelectedSugar(option.percentage)}
+                                    >
+                                        <div className="sugar-percentage">{option.percentage}</div>
+                                        <div className="sugar-label">{option.label}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        
+                        <div className="customization-section">
+                            <div className="customization-title">
+                                {language === 'en' ? 'Toppings (+$0.50 each)' : 'គុជ (+០.៥០$ រាល់មួយ)'}
+                                {showKhrPrices && (
+                                    <span className="khmer-price"> ({formatKhrPrice(usdToKhr(0.50))})</span>
+                                )}
+                            </div>
+                            <div className="topping-options">
+                                {toppingOptions.map(topping => (
+                                    <div 
+                                        key={topping.id}
+                                        className={`topping-option ${selectedTopping?.id === topping.id ? 'selected' : ''}`}
+                                        onClick={() => setSelectedTopping(topping)}
+                                    >
+                                        <div className="topping-name">{language === 'en' ? topping.name : topping.nameKh}</div>
+                                        <div className="topping-price">
+                                            <span className="usd-price">${topping.price.toFixed(2)}</span>
+                                            {showKhrPrices && (
+                                                <div className="khmer-price">{formatKhrPrice(usdToKhr(topping.price))}</div>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        
+                        <div className="modal-buttons">
+                            <button className="modal-btn cancel-btn" onClick={onCancel}>
+                                {language === 'en' ? 'Cancel' : 'បោះបង់'}
+                            </button>
+                            <button className="modal-btn confirm-btn" onClick={() => onConfirm(selectedSugar, selectedTopping)}>
+                                {language === 'en' ? 'Confirm' : 'បញ្ជាក់'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const ReceiptModal = ({ cart, notes, orderNumber, onClose, onPrint, language, showKhrPrices, discount }) => {
+            const t = translations[language];
+            
+            const getSubtotal = () => {
+                return cart.reduce((total, item) => {
+                    let itemTotal = item.price * item.quantity;
+                    if (item.topping) {
+                        itemTotal += item.topping.price * item.quantity;
+                    }
+                    return total + itemTotal;
+                }, 0);
+            };
+
+            const getDiscountAmount = () => {
+                if (!discount || !discount.amount) return 0;
+                
+                if (discount.type === 'percentage') {
+                    return getSubtotal() * (discount.amount / 100);
+                } else {
+                    return discount.amount;
+                }
+            };
+
+            const getTotal = () => {
+                const subtotal = getSubtotal();
+                const discountAmount = getDiscountAmount();
+                return Math.max(0, subtotal - discountAmount);
+            };
+
+            return (
+                <div className="modal-overlay">
+                    <div className="receipt-modal">
+                        <div className="receipt-header">
+                            <h2>{t.royalTeaCafe}</h2>
+                            <p>{t.orderReceipt}</p>
+                        </div>
+                        <div className="receipt-body">
+                            <div className="receipt-info">
+                                <p>{t.orderId}: {orderNumber}</p>
+                                <p>{language === 'en' ? 'Date' : 'កាលបរិច្ឆេទ'}: {new Date().toLocaleDateString()}</p>
+                                <p>{language === 'en' ? 'Time' : 'ម៉ោង'}: {new Date().toLocaleTimeString()}</p>
+                            </div>
+                            
+                            <div className="receipt-items">
+                                {cart.map(item => {
+                                    const itemTotal = (item.price + (item.topping ? item.topping.price : 0)) * item.quantity;
+                                    return (
+                                        <div key={`${item.id}-${item.sugarLevel}-${item.topping?.id}`} className="receipt-item">
+                                            <div className="receipt-item-details">
+                                                <div>
+                                                    <strong>{item.quantity}x</strong> {item.name}
+                                                </div>
+                                                {item.sugarLevel && (
+                                                    <div className="receipt-sugar">{t.sugarLevel}: {item.sugarLevel}</div>
+                                                )}
+                                                {item.topping && (
+                                                    <div className="receipt-topping">{t.topping}: {language === 'en' ? item.topping.name : item.topping.nameKh} (+${item.topping.price.toFixed(2)})</div>
+                                                )}
+                                            </div>
+                                            <div className="receipt-item-price">
+                                                <span className="usd-price">${itemTotal.toFixed(2)}</span>
+                                                {showKhrPrices && (
+                                                    <div className="khmer-price-receipt">{formatKhrPrice(usdToKhr(itemTotal))}</div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                            
+                            <div className="receipt-totals">
+                                <div className="receipt-total-row">
+                                    <div>{t.subtotal}:</div>
+                                    <div className="receipt-item-price">
+                                        <span className="usd-price">${getSubtotal().toFixed(2)}</span>
+                                        {showKhrPrices && (
+                                            <div className="khmer-price-receipt">{formatKhrPrice(usdToKhr(getSubtotal()))}</div>
+                                        )}
+                                    </div>
+                                </div>
+                                
+                                {discount && discount.amount > 0 && (
+                                    <div className="receipt-total-row discount-row">
+                                        <div>{t.discount}: 
+                                            {discount.type === 'percentage' ? ` (${discount.amount}%)` : ''}
+                                        </div>
+                                        <div className="receipt-item-price">
+                                            <span className="usd-price">-${getDiscountAmount().toFixed(2)}</span>
+                                            {showKhrPrices && (
+                                                <div className="khmer-price-receipt">-{formatKhrPrice(usdToKhr(getDiscountAmount()))}</div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                                
+                                <div className="receipt-total-row total-final">
+                                    <div>{t.total}:</div>
+                                    <div className="receipt-item-price">
+                                        <span className="usd-price">${getTotal().toFixed(2)}</span>
+                                        {showKhrPrices && (
+                                            <div className="khmer-price-receipt khmer-total">{formatKhrPrice(usdToKhr(getTotal()))}</div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {notes && (
+                                <div className="receipt-notes">
+                                    <p><strong>{t.notes}:</strong> {notes}</p>
+                                </div>
+                            )}
+                        </div>
+                        
+                        <div className="receipt-footer">
+                            <p>{t.thankYou}</p>
+                            <p>{t.comeAgain}</p>
+                        </div>
+                        
+                        <div className="receipt-buttons">
+                            <button className="print-btn" onClick={onPrint}>
+                                <i className="fas fa-print"></i> {t.print}
+                            </button>
+                            <button className="close-btn" onClick={onClose}>
+                                <i className="fas fa-times"></i> {t.close}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const PrinterConfigModal = ({ onClose, onSave, language, currentSettings }) => {
+            const [ipAddress, setIpAddress] = useState(currentSettings?.ipAddress || '');
+            const [port, setPort] = useState(currentSettings?.port || '80');
+            const [testStatus, setTestStatus] = useState(null);
+            
+            const t = translations[language];
+            
+            const handleTest = async () => {
+                if (!ipAddress) {
+                    setTestStatus({ success: false, message: 'Please enter IP address' });
+                    return;
+                }
+                
+                setTestStatus({ success: null, message: 'Testing connection...' });
+                
+                const result = await testPrinterConnection({ ipAddress, port });
+                setTestStatus(result);
+            };
+            
+            const handleSave = () => {
+                onSave({ ipAddress, port });
+            };
+            
+            return (
+                <div className="modal-overlay">
+                    <div className="printer-config-modal">
+                        <div className="customization-modal-header">
+                            <h3>{t.printerConfiguration}</h3>
+                        </div>
+                        
+                        <div className="printer-config-section">
+                            <div className="printer-config-title">{t.printerIpAddress}</div>
+                            <input
+                                type="text"
+                                className="printer-input"
+                                placeholder="192.168.1.100"
+                                value={ipAddress}
+                                onChange={(e) => setIpAddress(e.target.value)}
+                            />
+                            
+                            <div className="printer-config-title">{t.printerPort}</div>
+                            <input
+                                type="text"
+                                className="printer-input"
+                                placeholder="80"
+                                value={port}
+                                onChange={(e) => setPort(e.target.value)}
+                            />
+                            
+                            <button className="printer-test-btn" onClick={handleTest}>
+                                {t.testPrinter}
+                            </button>
+                            
+                            {testStatus && (
+                                <div className={`printer-status ${testStatus.success ? 'success' : 'error'}`}>
+                                    {testStatus.message}
+                                </div>
+                            )}
+                        </div>
+                        
+                        <div className="printer-help">
+                            <h4>{t.printerHelp}</h4>
+                            <ol>
+                                <li>{t.printerStep1}</li>
+                                <li>{t.printerStep2}</li>
+                                <li>{t.printerStep3}</li>
+                                <li>{t.printerStep4}</li>
+                                <li>{t.printerStep5}</li>
+                            </ol>
+                        </div>
+                        
+                        <div className="modal-buttons">
+                            <button className="modal-btn cancel-btn" onClick={onClose}>
+                                {language === 'en' ? 'Cancel' : 'បោះបង់'}
+                            </button>
+                            <button className="modal-btn confirm-btn" onClick={handleSave}>
+                                {t.savePrinterSettings}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const CafeDashboard = () => {
+            const [activeTab, setActiveTab] = useState('pos');
+            const [activeCategory, setActiveCategory] = useState('HOT SALES');
+            const [cart, setCart] = useState([]);
+            const [notes, setNotes] = useState('');
+            const [orderNumber, setOrderNumber] = useState(1);
+            const [reportType, setReportType] = useState('daily');
+            const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+            const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().substring(0, 7));
+            const [orders, setOrders] = useState(orderHistory);
+            const [showReceipt, setShowReceipt] = useState(false);
+            const [showCustomizationModal, setShowCustomizationModal] = useState(false);
+            const [selectedItem, setSelectedItem] = useState(null);
+            const [lastOrder, setLastOrder] = useState(null);
+            const [language, setLanguage] = useState('en');
+            const [showKhrPrices, setShowKhrPrices] = useState(false);
+            const [lastResetDate, setLastResetDate] = useState(localStorage.getItem('lastResetDate') || new Date().toLocaleDateString());
+            const [searchQuery, setSearchQuery] = useState('');
+            const [searchResults, setSearchResults] = useState([]);
+            const [isSearching, setIsSearching] = useState(false);
+            const [discount, setDiscount] = useState(null);
+            const [discountAmount, setDiscountAmount] = useState('');
+            const [discountType, setDiscountType] = useState('percentage');
+            const [printerSettings, setPrinterSettings] = useState(() => {
+                const saved = localStorage.getItem('printerSettings');
+                return saved ? JSON.parse(saved) : { ipAddress: '', port: '80' };
+            });
+            const [showPrinterConfig, setShowPrinterConfig] = useState(false);
+            const [printStatus, setPrintStatus] = useState(null);
+            
+            const dailySalesChartRef = useRef(null);
+            const categorySalesChartRef = useRef(null);
+            
+            const t = translations[language];
+            
+            useEffect(() => {
+                const checkDayChange = () => {
+                    const today = new Date().toLocaleDateString();
+                    const storedDate = localStorage.getItem('lastResetDate');
+                    
+                    if (storedDate !== today) {
+                        localStorage.setItem('lastResetDate', today);
+                        setLastResetDate(today);
+                        setOrderNumber(1);
+                        localStorage.setItem('lastOrderNumber', '1');
+                    } else {
+                        const lastOrderNum = parseInt(localStorage.getItem('lastOrderNumber') || '1');
+                        setOrderNumber(lastOrderNum);
+                    }
+                };
+                
+                checkDayChange();
+                
+                const intervalId = setInterval(checkDayChange, 60000);
+                
+                return () => clearInterval(intervalId);
+            }, []);
+            
+            useEffect(() => {
+                if (searchQuery.trim() === '') {
+                    setSearchResults([]);
+                    setIsSearching(false);
+                    return;
+                }
+                
+                setIsSearching(true);
+                
+                const results = [];
+                Object.keys(menuData).forEach(category => {
+                    menuData[category].forEach(item => {
+                        const searchLower = searchQuery.toLowerCase();
+                        const nameMatch = item.name.toLowerCase().includes(searchLower);
+                        const nameKhMatch = item.nameKh.toLowerCase().includes(searchLower);
+                        
+                        if (nameMatch || nameKhMatch) {
+                            results.push({
+                                ...item,
+                                category: category
+                            });
+                        }
+                    });
+                });
+                
+                setSearchResults(results);
+            }, [searchQuery]);
+            
+            const handleSearch = (query) => {
+                setSearchQuery(query);
+            };
+            
+            const clearSearch = () => {
+                setSearchQuery('');
+                setSearchResults([]);
+                setIsSearching(false);
+            };
+            
+            const getProductsToDisplay = () => {
+                if (isSearching && searchQuery.trim() !== '') {
+                    return searchResults;
+                }
+                return menuData[activeCategory] || [];
+            };
+            
+            const applyDiscount = () => {
+                if (!discountAmount || isNaN(discountAmount) || parseFloat(discountAmount) <= 0) {
+                    alert(language === 'en' ? 'Please enter a valid discount amount' : 'សូមបញ្ចូលចំនួនបញ្ចុះតម្លៃដែលត្រឹមត្រូវ');
+                    return;
+                }
+                
+                const amount = parseFloat(discountAmount);
+                
+                if (discountType === 'percentage' && (amount < 0 || amount > 100)) {
+                    alert(language === 'en' ? 'Percentage discount must be between 0% and 100%' : 'បញ្ចុះតម្លៃភាគរយត្រូវតែពី 0% ដល់ 100%');
+                    return;
+                }
+                
+                setDiscount({
+                    amount: amount,
+                    type: discountType
+                });
+                
+                setDiscountAmount('');
+            };
+
+            const removeDiscount = () => {
+                setDiscount(null);
+                setDiscountAmount('');
+            };
+
+            const getSubtotal = () => {
+                return cart.reduce((total, item) => {
+                    let itemTotal = item.price * item.quantity;
+                    if (item.topping) {
+                        itemTotal += item.topping.price * item.quantity;
+                    }
+                    return total + itemTotal;
+                }, 0);
+            };
+
+            const getDiscountAmount = () => {
+                if (!discount || !discount.amount) return 0;
+                
+                if (discount.type === 'percentage') {
+                    return getSubtotal() * (discount.amount / 100);
+                } else {
+                    return discount.amount;
+                }
+            };
+
+            const getTotal = () => {
+                const subtotal = getSubtotal();
+                const discountAmount = getDiscountAmount();
+                return Math.max(0, subtotal - discountAmount);
+            };
+
+            const filteredOrders = orders.filter(order => {
+                const orderDate = new Date(order.date);
+                
+                if (reportType === 'daily') {
+                    return orderDate.toISOString().split('T')[0] === selectedDate;
+                } else {
+                    return orderDate.toISOString().substring(0, 7) === selectedMonth;
+                }
+            });
+            
+            const calculateStats = () => {
+                const totalSales = filteredOrders.reduce((sum, order) => sum + order.total, 0);
+                const totalOrders = filteredOrders.length;
+                const averageOrder = totalOrders > 0 ? totalSales / totalOrders : 0;
+                
+                const totalProductsSold = filteredOrders.reduce((sum, order) => {
+                    return sum + order.items.reduce((itemSum, item) => itemSum + item.quantity, 0);
+                }, 0);
+                
+                return {
+                    totalSales: totalSales.toFixed(2),
+                    totalOrders,
+                    averageOrder: averageOrder.toFixed(2),
+                    totalProductsSold
+                };
+            };
+            
+            const stats = calculateStats();
+            
+            const prepareChartData = () => {
+                if (reportType === 'daily') {
+                    const hours = Array.from({length: 24}, (_, i) => i);
+                    const salesByHour = hours.map(hour => {
+                        return filteredOrders
+                            .filter(order => new Date(order.date).getHours() === hour)
+                            .reduce((sum, order) => sum + order.total, 0);
+                    });
+                    
+                    return {
+                        labels: hours.map(h => `${h}:00`),
+                        data: salesByHour,
+                        label: 'Sales by Hour'
+                    };
+                } else {
+                    const daysInMonth = new Date(
+                        parseInt(selectedMonth.split('-')[0]),
+                        parseInt(selectedMonth.split('-')[1]),
+                        0
+                    ).getDate();
+                    
+                    const days = Array.from({length: daysInMonth}, (_, i) => i + 1);
+                    const salesByDay = days.map(day => {
+                        const dayStr = day < 10 ? `0${day}` : `${day}`;
+                        return filteredOrders
+                            .filter(order => order.date.startsWith(`${selectedMonth}-${dayStr}`))
+                            .reduce((sum, order) => sum + order.total, 0);
+                    });
+                    
+                    return {
+                        labels: days.map(d => `${d}`),
+                        data: salesByDay,
+                        label: 'Sales by Day'
+                    };
+                }
+            };
+            
+            const chartData = prepareChartData();
+            
+            const prepareCategoryData = () => {
+                const categorySales = {};
+                
+                filteredOrders.forEach(order => {
+                    order.items.forEach(item => {
+                        for (const category of Object.keys(menuData)) {
+                            if (menuData[category].some(menuItem => menuItem.id === item.id)) {
+                                categorySales[category] = (categorySales[category] || 0) + (item.price * item.quantity);
+                                if (item.topping) {
+                                    categorySales[category] += (item.topping.price * item.quantity);
+                                }
+                                break;
+                            }
+                        }
+                    });
+                });
+                
+                return {
+                    labels: Object.keys(categorySales),
+                    data: Object.values(categorySales)
+                };
+            };
+            
+            const categoryData = prepareCategoryData();
+            
+            useEffect(() => {
+                if (activeTab !== 'reports') return;
+                
+                if (dailySalesChartRef.current) {
+                    dailySalesChartRef.current.destroy();
+                }
+                if (categorySalesChartRef.current) {
+                    categorySalesChartRef.current.destroy();
+                }
+                
+                const salesCtx = document.getElementById('salesChart').getContext('2d');
+                dailySalesChartRef.current = new Chart(salesCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: chartData.labels,
+                        datasets: [{
+                            label: chartData.label,
+                            data: chartData.data,
+                            backgroundColor: 'rgba(219, 39, 119, 0.5)',
+                            borderColor: 'rgba(219, 39, 119, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: language === 'en' ? 'Sales ($)' : 'ការលក់ ($)'
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+                categorySalesChartRef.current = new Chart(categoryCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: categoryData.labels.map(label => {
+                            const categoryTranslations = {
+                                'HOT SALES': language === 'en' ? 'Hot Sales' : 'លក់ដាច់',
+                                'COFFEE': language === 'en' ? 'Coffee' : 'កាហ្វេ',
+                                'FRAPPE': language === 'en' ? 'Frappe' : 'ក្រឡុក',
+                                'MILK TEA': language === 'en' ? 'Milk Tea' : 'តែទឹកដោះគោ',
+                                'OTHER': language === 'en' ? 'Other' : 'ផ្សេងៗ',
+                                'SODA': language === 'en' ? 'Soda' : 'សូដា'
+                            };
+                            return categoryTranslations[label] || label;
+                        }),
+                        datasets: [{
+                            data: categoryData.data,
+                            backgroundColor: [
+                                'rgba(219, 39, 119, 0.8)',
+                                'rgba(156, 39, 176, 0.8)',
+                                'rgba(63, 81, 181, 0.8)',
+                                'rgba(33, 150, 243, 0.8)',
+                                'rgba(3, 169, 244, 0.8)',
+                                'rgba(0, 188, 212, 0.8)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'right'
+                            }
+                        }
+                    }
+                });
+                
+                return () => {
+                    if (dailySalesChartRef.current) {
+                        dailySalesChartRef.current.destroy();
+                    }
+                    if (categorySalesChartRef.current) {
+                        categorySalesChartRef.current.destroy();
+                    }
+                };
+            }, [activeTab, reportType, selectedDate, selectedMonth, language]);
+            
+            const addToCart = (item) => {
+                setSelectedItem(item);
+                setShowCustomizationModal(true);
+            };
+
+            const handleCustomization = (sugarLevel, topping) => {
+                const itemWithCustomization = { 
+                    ...selectedItem, 
+                    sugarLevel,
+                    topping
+                };
+                
+                const itemKey = `${selectedItem.id}-${sugarLevel}-${topping?.id || 'no-topping'}`;
+                
+                const existingItem = cart.find(cartItem => 
+                    `${cartItem.id}-${cartItem.sugarLevel}-${cartItem.topping?.id || 'no-topping'}` === itemKey
+                );
+                
+                if (existingItem) {
+                    setCart(cart.map(cartItem => 
+                        `${cartItem.id}-${cartItem.sugarLevel}-${cartItem.topping?.id || 'no-topping'}` === itemKey
+                            ? { ...cartItem, quantity: cartItem.quantity + 1 } 
+                            : cartItem
+                    ));
+                } else {
+                    setCart([...cart, { ...itemWithCustomization, quantity: 1 }]);
+                }
+                
+                setShowCustomizationModal(false);
+                setSelectedItem(null);
+            };
+
+            const cancelCustomization = () => {
+                setShowCustomizationModal(false);
+                setSelectedItem(null);
+            };
+
+            const removeFromCart = (id) => {
+                setCart(cart.filter(item => item.id !== id));
+            };
+
+            const updateQuantity = (id, quantity) => {
+                if (quantity <= 0) {
+                    removeFromCart(id);
+                    return;
+                }
+                
+                setCart(cart.map(item => 
+                    item.id === id ? { ...item, quantity } : item
+                ));
+            };
+
+            const handleSavePrinterSettings = (settings) => {
+                setPrinterSettings(settings);
+                localStorage.setItem('printerSettings', JSON.stringify(settings));
+                setShowPrinterConfig(false);
+                setPrintStatus({ 
+                    success: true, 
+                    message: translations[language].printerSettingsSaved 
+                });
+                
+                setTimeout(() => setPrintStatus(null), 3000);
+            };
+
+            const processPayment = async () => {
+                if (cart.length === 0) {
+                    alert(language === 'en' ? "Cart is empty. Please add items before payment." : "រទេះទទេ។ សូមបន្ថែមធាតុមុនពេលបង់ប្រាក់។");
+                    return;
+                }
+                
+                const newOrder = {
+                    id: orderNumber,
+                    date: new Date().toISOString(),
+                    items: [...cart],
+                    subtotal: getSubtotal(),
+                    discount: discount,
+                    total: getTotal(),
+                    status: 'Completed'
+                };
+                
+                setOrders([...orders, newOrder]);
+                setLastOrder(newOrder);
+                
+                const nextOrderNumber = orderNumber + 1;
+                setOrderNumber(nextOrderNumber);
+                localStorage.setItem('lastOrderNumber', nextOrderNumber.toString());
+                
+                setShowReceipt(true);
+                
+                // Try to print to TSP100III
+                setPrintStatus({ success: null, message: 'Sending to printer...' });
+                
+                const printSuccess = await printToTSP100III(cart, orderNumber, notes, discount, language, printerSettings);
+                
+                if (printSuccess) {
+                    setPrintStatus({ 
+                        success: true, 
+                        message: 'Receipt printed successfully!' 
+                    });
+                } else {
+                    setPrintStatus({ 
+                        success: false, 
+                        message: 'Printing failed. Please check printer connection.' 
+                    });
+                }
+                
+                setTimeout(() => setPrintStatus(null), 5000);
+                
+                setCart([]);
+                setNotes('');
+                setDiscount(null);
+            };
+
+            const printReceipt = async () => {
+                setPrintStatus({ success: null, message: 'Printing receipt...' });
+                
+                const printSuccess = await printToTSP100III(
+                    lastOrder.items, 
+                    lastOrder.id, 
+                    notes, 
+                    lastOrder.discount, 
+                    language, 
+                    printerSettings
+                );
+                
+                if (printSuccess) {
+                    setPrintStatus({ 
+                        success: true, 
+                        message: 'Receipt printed successfully!' 
+                    });
+                } else {
+                    setPrintStatus({ 
+                        success: false, 
+                        message: 'Printing failed. Please check printer connection.' 
+                    });
+                    
+                    // Fallback to browser print
+                    setTimeout(() => {
+                        window.print();
+                    }, 1000);
+                }
+                
+                setTimeout(() => setPrintStatus(null), 5000);
+            };
+
+            const closeReceipt = () => {
+                setShowReceipt(false);
+            };
+
+            const toggleLanguage = () => {
+                setLanguage(prev => prev === 'en' ? 'km' : 'en');
+            };
+
+            const togglePriceDisplay = () => {
+                setShowKhrPrices(prev => !prev);
+            };
+
+            const getCategoryName = (category) => {
+                const categoryMap = {
+                    'HOT SALES': language === 'en' ? 'HOT SALES' : 'លក់ដាច់',
+                    'COFFEE': language === 'en' ? 'COFFEE' : 'កាហ្វេ',
+                    'FRAPPE': language === 'en' ? 'FRAPPE' : 'ក្រឡុក',
+                    'MILK TEA': language === 'en' ? 'MILK TEA' : 'តែទឹកដោះគោ',
+                    'OTHER': language === 'en' ? 'OTHER' : 'ផ្សេងៗ',
+                    'SODA': language === 'en' ? 'SODA' : 'សូដា'
+                };
+                return categoryMap[category] || category;
+            };
+
+            return (
+                <div className="dashboard">
+                    <header>
+                        <div className="logo">
+                            <i className="fas fa-crown"></i>
+                            Royal Tea&Cafe
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+                            <div className="language-toggle" onClick={toggleLanguage}>
+                                <span className="language-flag">{language === 'en' ? '🇺🇸' : '🇰🇭'}</span>
+                                <span>{language === 'en' ? 'EN' : 'KH'}</span>
+                            </div>
+                            <div className="price-toggle" onClick={togglePriceDisplay}>
+                                <i className={`fas ${showKhrPrices ? 'fa-dollar-sign' : 'fa-money-bill'}`}></i>
+                                <span>{showKhrPrices ? t.showUsdPrices : t.showKhrPrices}</span>
+                            </div>
+                            <button 
+                                className="printer-config-btn"
+                                onClick={() => setShowPrinterConfig(true)}
+                            >
+                                <i className="fas fa-print"></i>
+                                <span>{t.configurePrinter}</span>
+                            </button>
+                            <div className="user-info">
+                                <div className="avatar">KL</div>
+                                <span>kimrong Leng</span>
+                            </div>
+                        </div>
+                    </header>
+                    
+                    {printStatus && (
+                        <div className={`global-status ${printStatus.success === null ? 'info' : printStatus.success ? 'success' : 'error'}`}>
+                            {printStatus.message}
+                        </div>
+                    )}
+                    
+                    <div className="nav-tabs">
+                        <div 
+                            className={`nav-tab ${activeTab === 'pos' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('pos')}
+                        >
+                            <i className="fas fa-cash-register"></i> {t.pointOfSale}
+                        </div>
+                        <div 
+                            className={`nav-tab ${activeTab === 'reports' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('reports')}
+                        >
+                            <i className="fas fa-chart-line"></i> {t.reports}
+                        </div>
+                    </div>
+                    
+                    {activeTab === 'pos' ? (
+                        <>
+                            <ImageSlider />
+                            
+                            <div className="main-content">
+                                <div className="order-section">
+                                    <div className="order-header">
+                                        <h2>{t.enterSale}</h2>
+                                        <div>{t.order} #{orderNumber}</div>
+                                    </div>
+                                    
+                                    <div className="search-container">
+                                        <div style={{position: 'relative'}}>
+                                            <input
+                                                type="text"
+                                                className="search-input"
+                                                placeholder={t.searchProducts}
+                                                value={searchQuery}
+                                                onChange={(e) => handleSearch(e.target.value)}
+                                            />
+                                            <div className="search-icon">
+                                                <i className="fas fa-search"></i>
+                                            </div>
+                                            {searchQuery && (
+                                                <button 
+                                                    onClick={clearSearch}
+                                                    style={{
+                                                        position: 'absolute',
+                                                        right: '40px',
+                                                        top: '50%',
+                                                        transform: 'translateY(-50%)',
+                                                        background: 'none',
+                                                        border: 'none',
+                                                        color: '#db2777',
+                                                        cursor: 'pointer'
+                                                    }}
+                                                >
+                                                    <i className="fas fa-times"></i>
+                                                </button>
+                                            )}
+                                        </div>
+                                        {searchQuery && (
+                                            <div className="search-results-info">
+                                                {searchResults.length > 0 ? (
+                                                    <span>
+                                                        {t.showingResultsFor}: "<strong>{searchQuery}</strong>" 
+                                                        ({searchResults.length} {language === 'en' ? 'products found' : 'ផលិតផលត្រូវបានរកឃើញ'})
+                                                    </span>
+                                                ) : (
+                                                    <span>{t.noResultsFound}: "<strong>{searchQuery}</strong>"</span>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                    
+                                    {!searchQuery && (
+                                        <div className="categories">
+                                            {Object.keys(menuData).map(category => (
+                                                <button
+                                                    key={category}
+                                                    className={`category-btn ${activeCategory === category ? 'active' : ''}`}
+                                                    onClick={() => setActiveCategory(category)}
+                                                >
+                                                    {getCategoryName(category)}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                    
+                                    <div className="menu-container">
+                                        <div className="menu-grid">
+                                            {getProductsToDisplay().map(item => (
+                                                <div key={item.id} className="menu-item" onClick={() => addToCart(item)}>
+                                                    <img src={item.image} alt={item.name} className="menu-item-image" />
+                                                    <h3>{language === 'en' ? item.name : item.nameKh}</h3>
+                                                    <small>{language === 'en' ? item.nameKh : item.name}</small>
+                                                    {item.category && searchQuery && (
+                                                        <small style={{color: '#db2777', fontWeight: 'bold'}}>
+                                                            {getCategoryName(item.category)}
+                                                        </small>
+                                                    )}
+                                                    <p>
+                                                        <span className="usd-price">${item.price.toFixed(2)}</span>
+                                                        {showKhrPrices && (
+                                                            <div className="khmer-price">{formatKhrPrice(usdToKhr(item.price))}</div>
+                                                        )}
+                                                    </p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        {searchQuery && searchResults.length === 0 && (
+                                            <div className="empty-cart">
+                                                <i className="fas fa-search"></i>
+                                                <p>{t.noResultsFound}</p>
+                                                <button 
+                                                    className="category-btn" 
+                                                    onClick={clearSearch}
+                                                    style={{marginTop: '10px'}}
+                                                >
+                                                    {t.clearSearch}
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                                
+                                <div className="cart-section">
+                                    <div className="cart-header">
+                                        <h2>{language === 'en' ? 'Current Order' : 'ការកម្មង់បច្ចុប្បន្ន'}</h2>
+                                        <span>{cart.length} {t.items}</span>
+                                    </div>
+                                    
+                                    <div className="cart-items">
+                                        {cart.length === 0 ? (
+                                            <div className="empty-cart">
+                                                <i className="fas fa-shopping-cart"></i>
+                                                <p>{t.noItems}</p>
+                                            </div>
+                                        ) : (
+                                            cart.map(item => {
+                                                const itemTotal = (item.price + (item.topping ? item.topping.price : 0)) * item.quantity;
+                                                return (
+                                                    <div key={`${item.id}-${item.sugarLevel}-${item.topping?.id}`} className="cart-item">
+                                                        <div className="cart-item-details">
+                                                            <span className="cart-item-name">
+                                                                {language === 'en' ? item.name : item.nameKh} 
+                                                                {item.sugarLevel && ` (${item.sugarLevel} ${language === 'en' ? 'sugar' : 'ស្ករ'})`}
+                                                                {item.topping && ` + ${language === 'en' ? item.topping.name : item.topping.nameKh}`}
+                                                            </span>
+                                                            <div className="cart-item-controls">
+                                                                <button className="quantity-btn" onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    updateQuantity(item.id, item.quantity - 1);
+                                                                }}>-</button>
+                                                                <span>{item.quantity}</span>
+                                                                <button className="quantity-btn" onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    updateQuantity(item.id, item.quantity + 1);
+                                                                }}>+</button>
+                                                            </div>
+                                                        </div>
+                                                        <div className="cart-item-price">
+                                                            <span className="usd-price">${itemTotal.toFixed(2)}</span>
+                                                            {showKhrPrices && (
+                                                                <div className="khmer-price">{formatKhrPrice(usdToKhr(itemTotal))}</div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })
+                                        )}
+                                    </div>
+                                    
+                                    <div className="discount-section">
+                                        <h3>{t.discount}</h3>
+                                        <div className="discount-controls">
+                                            <input
+                                                type="number"
+                                                className="discount-input"
+                                                placeholder={t.enterDiscount}
+                                                value={discountAmount}
+                                                onChange={(e) => setDiscountAmount(e.target.value)}
+                                                min="0"
+                                                step={discountType === 'percentage' ? "1" : "0.01"}
+                                            />
+                                            <select 
+                                                className="discount-type"
+                                                value={discountType}
+                                                onChange={(e) => setDiscountType(e.target.value)}
+                                            >
+                                                <option value="percentage">%</option>
+                                                <option value="fixed">$</option>
+                                            </select>
+                                        </div>
+                                        <div className="discount-buttons">
+                                            <button className="apply-discount-btn" onClick={applyDiscount}>
+                                                {t.applyDiscount}
+                                            </button>
+                                            <button className="remove-discount-btn" onClick={removeDiscount}>
+                                                {t.removeDiscount}
+                                            </button>
+                                        </div>
+                                        {discount && (
+                                            <div className="discount-applied">
+                                                {t.discountApplied}: {discount.amount}{discount.type === 'percentage' ? '%' : '$'}
+                                            </div>
+                                        )}
+                                    </div>
+                                    
+                                    <div className="cart-totals">
+                                        <div className="total-row">
+                                            <span>{t.subtotal}</span>
+                                            <span className="cart-item-price">
+                                                <span className="usd-price">${getSubtotal().toFixed(2)}</span>
+                                                {showKhrPrices && (
+                                                    <div className="khmer-price">{formatKhrPrice(usdToKhr(getSubtotal()))}</div>
+                                                )}
+                                            </span>
+                                        </div>
+                                        
+                                        {discount && discount.amount > 0 && (
+                                            <div className="total-row discount-row">
+                                                <span>{t.discount}: 
+                                                    {discount.type === 'percentage' ? ` (${discount.amount}%)` : ''}
+                                                </span>
+                                                <span className="cart-item-price">
+                                                    <span className="usd-price">-${getDiscountAmount().toFixed(2)}</span>
+                                                    {showKhrPrices && (
+                                                        <div className="khmer-price">-{formatKhrPrice(usdToKhr(getDiscountAmount()))}</div>
+                                                    )}
+                                                </span>
+                                            </div>
+                                        )}
+                                        
+                                        <div className="total-row total-final">
+                                            <span>{t.total}</span>
+                                            <span className="cart-item-price">
+                                                <span className="usd-price">${getTotal().toFixed(2)}</span>
+                                                {showKhrPrices && (
+                                                    <div className="khmer-price khmer-total">{formatKhrPrice(usdToKhr(getTotal()))}</div>
+                                                )}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <button className="pay-btn" onClick={processPayment}>
+                                        <i className="fas fa-credit-card"></i>
+                                        {t.pay} 
+                                        <span className="usd-price"> ${getTotal().toFixed(2)}</span>
+                                        {showKhrPrices && (
+                                            <span className="khmer-font"> ({formatKhrPrice(usdToKhr(getTotal()))})</span>
+                                        )}
+                                    </button>
+                                    
+                                    <div className="notes-section">
+                                        <h3>{t.addNotes}</h3>
+                                        <textarea 
+                                            value={notes} 
+                                            onChange={(e) => setNotes(e.target.value)}
+                                            placeholder={t.specialInstructions}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="reports-section active">
+                            <div className="report-controls">
+                                <div className="report-control">
+                                    <label>{t.reportType}</label>
+                                    <select value={reportType} onChange={(e) => setReportType(e.target.value)}>
+                                        <option value="daily">{t.dailyReport}</option>
+                                        <option value="monthly">{t.monthlyReport}</option>
+                                    </select>
+                                </div>
+                                
+                                {reportType === 'daily' ? (
+                                    <div className="report-control">
+                                        <label>{t.selectDate}</label>
+                                        <input 
+                                            type="date" 
+                                            value={selectedDate} 
+                                            onChange={(e) => setSelectedDate(e.target.value)}
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="report-control">
+                                        <label>{t.selectMonth}</label>
+                                        <input 
+                                            type="month" 
+                                            value={selectedMonth} 
+                                            onChange={(e) => setSelectedMonth(e.target.value)}
+                                        />
+                                    </div>
+                                )}
+                                
+                                <button className="report-btn">
+                                    <i className="fas fa-download"></i> {t.exportReport}
+                                </button>
+                            </div>
+                            
+                            <div className="report-summary">
+                                <div className="summary-card">
+                                    <h3>{t.totalSales}</h3>
+                                    <div className="value">
+                                        <span className="usd-price">${stats.totalSales}</span>
+                                        {showKhrPrices && (
+                                            <div className="khmer-price">{formatKhrPrice(usdToKhr(parseFloat(stats.totalSales)))}</div>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="summary-card">
+                                    <h3>{t.totalOrders}</h3>
+                                    <div className="value">{stats.totalOrders}</div>
+                                </div>
+                                <div className="summary-card">
+                                    <h3>{t.averageOrder}</h3>
+                                    <div className="value">
+                                        <span className="usd-price">${stats.averageOrder}</span>
+                                        {showKhrPrices && (
+                                            <div className="khmer-price">{formatKhrPrice(usdToKhr(parseFloat(stats.averageOrder)))}</div>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="summary-card">
+                                    <h3>{t.productsSold}</h3>
+                                    <div className="value">{stats.totalProductsSold}</div>
+                                </div>
+                            </div>
+                            
+                            <div className="chart-container">
+                                <div className="chart-title">
+                                    {reportType === 'daily' ? t.dailySalesReport : t.monthlySalesReport}
+                                </div>
+                                <canvas id="salesChart"></canvas>
+                            </div>
+                            
+                            <div className="chart-container">
+                                <div className="chart-title">{t.salesByCategory}</div>
+                                <canvas id="categoryChart"></canvas>
+                            </div>
+                            
+                            <h3>{t.orderDetails}</h3>
+                            {filteredOrders.length > 0 ? (
+                                <table className="orders-table">
+                                    <thead>
+                                        <tr>
+                                            <th>{t.orderId}</th>
+                                            <th>{t.dateTime}</th>
+                                            <th>{language === 'en' ? 'Items' : 'ធាតុ'}</th>
+                                            <th>{t.total}</th>
+                                            <th>{t.status}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {filteredOrders.map(order => (
+                                            <tr key={order.id}>
+                                                <td>#{order.id}</td>
+                                                <td>{new Date(order.date).toLocaleString()}</td>
+                                                <td>
+                                                    {order.items.map(item => (
+                                                        <div key={item.id}>
+                                                            {item.quantity}x {language === 'en' ? item.name : menuData[Object.keys(menuData).find(cat => menuData[cat].some(i => i.id === item.id))]?.find(i => i.id === item.id)?.nameKh || item.name} 
+                                                            {item.sugarLevel && ` (${item.sugarLevel} ${language === 'en' ? 'sugar' : 'ស្ករ'})`}
+                                                            {item.topping && ` + ${language === 'en' ? item.topping.name : item.topping.nameKh}`}
+                                                            (${(item.price + (item.topping ? item.topping.price : 0)).toFixed(2)})
+                                                        </div>
+                                                    ))}
+                                                </td>
+                                                <td>
+                                                    <div className="cart-item-price">
+                                                        <span className="usd-price">${order.total.toFixed(2)}</span>
+                                                        {showKhrPrices && (
+                                                            <div className="khmer-price">{formatKhrPrice(usdToKhr(order.total))}</div>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span className={`status ${order.status.toLowerCase()}`}>
+                                                        {order.status}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <div className="no-orders">
+                                    <i className="fas fa-file-invoice"></i>
+                                    <p>{t.noOrders} {reportType === 'daily' ? (language === 'en' ? 'for the selected date' : 'សម្រាប់កាលបរិច្ឆេទដែលបានជ្រើសរើស') : (language === 'en' ? 'for the selected month' : 'សម្រាប់ខែដែលបានជ្រើសរើស')}</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                    
+                    {showCustomizationModal && (
+                        <CustomizationModal 
+                            item={selectedItem}
+                            onConfirm={handleCustomization}
+                            onCancel={cancelCustomization}
+                            language={language}
+                            showKhrPrices={showKhrPrices}
+                        />
+                    )}
+                    
+                    {showReceipt && (
+                        <ReceiptModal 
+                            cart={lastOrder.items}
+                            notes={notes}
+                            orderNumber={lastOrder.id}
+                            onClose={closeReceipt}
+                            onPrint={printReceipt}
+                            language={language}
+                            showKhrPrices={showKhrPrices}
+                            discount={lastOrder.discount}
+                        />
+                    )}
+                    
+                    {showPrinterConfig && (
+                        <PrinterConfigModal 
+                            onClose={() => setShowPrinterConfig(false)}
+                            onSave={handleSavePrinterSettings}
+                            language={language}
+                            currentSettings={printerSettings}
+                        />
+                    )}
+                </div>
+            );
+        };
+
+        ReactDOM.render(<CafeDashboard />, document.getElementById('root'));
+    </script>
+</body>
+</html>
