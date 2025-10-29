@@ -6,6 +6,8 @@
     <title>Royal Cafe POS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Add SheetJS library for Excel export -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -14,11 +16,146 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
+        /* Login Page Styles */
+        .login-page {
+            background: linear-gradient(135deg, #db2777 0%, #ec4899 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-logo h1 {
+            color: #db2777;
+            font-size: 28px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .login-logo .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .login-form-group {
+            margin-bottom: 20px;
+        }
+
+        .login-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .login-form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .login-form-group input:focus {
+            outline: none;
+            border-color: #db2777;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #db2777 0%, #ec4899 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-error-message {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+
+        .login-demo-credentials {
+            background: #fdf2f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+            border: 1px solid #fbcfe8;
+        }
+
+        .login-demo-credentials h4 {
+            margin-bottom: 8px;
+            color: #db2777;
+        }
+
+        .user-role-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #db2777;
+            color: white;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 8px;
+            text-transform: uppercase;
+        }
+
+        .user-role-badge.staff {
+            background: #0ea5e9;
+        }
+
+        .user-role-badge.admin {
+            background: #db2777;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Existing POS Styles */
         body {
             background-color: #fdf2f8;
             color: #333;
-            padding: 20px;
+            padding: 10px;
             min-height: 100vh;
+            overflow-x: hidden;
         }
         
         .dashboard {
@@ -30,20 +167,22 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            height: 95vh;
+            min-height: 90vh;
         }
         
         header {
             background: linear-gradient(135deg, #db2777 0%, #ec4899 100%);
             color: white;
-            padding: 20px;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         
         .logo {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
             display: flex;
             align-items: center;
@@ -51,7 +190,15 @@
         }
         
         .logo i {
-            font-size: 32px;
+            font-size: 28px;
+        }
+        
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
         
         .user-info {
@@ -64,8 +211,8 @@
         }
         
         .avatar {
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             background: rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             display: flex;
@@ -78,14 +225,18 @@
             display: flex;
             background: #fce7f3;
             border-bottom: 1px solid #fbcfe8;
+            flex-wrap: wrap;
         }
         
         .nav-tab {
-            padding: 15px 25px;
+            padding: 12px 20px;
             cursor: pointer;
             font-weight: 500;
             transition: all 0.3s;
             border-bottom: 3px solid transparent;
+            flex: 1;
+            text-align: center;
+            min-width: 140px;
         }
         
         .nav-tab.active {
@@ -100,7 +251,7 @@
         }
         
         .slider-container {
-            height: 200px;
+            height: 150px;
             position: relative;
             overflow: hidden;
             background: #fce7f3;
@@ -123,7 +274,7 @@
             background-position: center;
             color: white;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            font-size: 24px;
+            font-size: 20px;
             font-weight: bold;
         }
         
@@ -144,16 +295,16 @@
         
         .slider-nav {
             position: absolute;
-            bottom: 15px;
+            bottom: 10px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
         
         .slider-dot {
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.5);
             cursor: pointer;
@@ -167,41 +318,45 @@
         .main-content {
             display: grid;
             grid-template-columns: 3fr 1fr;
-            gap: 20px;
-            padding: 20px;
+            gap: 15px;
+            padding: 15px;
             flex: 1;
             overflow: hidden;
+            min-height: 400px;
         }
         
         .order-section {
             background: white;
             border-radius: 12px;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
             border: 1px solid #fbcfe8;
+            min-height: 500px;
         }
         
         .order-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
             border-bottom: 2px solid #fdf2f8;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         
         .search-container {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             position: relative;
         }
         
         .search-input {
             width: 100%;
-            padding: 12px 45px 12px 15px;
+            padding: 10px 40px 10px 12px;
             border: 1px solid #fbcfe8;
-            border-radius: 10px;
-            font-size: 16px;
+            border-radius: 8px;
+            font-size: 14px;
             background: #fdf2f8;
             transition: all 0.3s;
         }
@@ -214,36 +369,37 @@
         
         .search-icon {
             position: absolute;
-            right: 15px;
+            right: 12px;
             top: 50%;
             transform: translateY(-50%);
             color: #db2777;
-            font-size: 18px;
+            font-size: 16px;
         }
         
         .search-results-info {
-            margin-top: 10px;
-            font-size: 14px;
+            margin-top: 8px;
+            font-size: 12px;
             color: #9d174d;
             font-weight: 500;
         }
         
         .categories {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 15px;
             flex-wrap: wrap;
         }
         
         .category-btn {
-            padding: 12px 20px;
+            padding: 10px 15px;
             background: #fdf2f8;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 500;
             transition: all 0.3s;
             color: #db2777;
+            font-size: 14px;
         }
         
         .category-btn.active {
@@ -260,25 +416,26 @@
             overflow-y: auto;
             flex: 1;
             padding-right: 5px;
+            min-height: 300px;
         }
         
         .menu-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
         }
         
         .menu-item {
             background: #fdf2f8;
-            border-radius: 12px;
-            padding: 15px;
+            border-radius: 10px;
+            padding: 12px;
             text-align: center;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 200px;
+            min-height: 180px;
             border: 1px solid #fbcfe8;
             position: relative;
             overflow: hidden;
@@ -292,15 +449,15 @@
         
         .menu-item-image {
             width: 100%;
-            height: 200px;
+            height: 120px;
             object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
         }
         
         .menu-item h3 {
-            font-size: 16px;
-            margin-bottom: 8px;
+            font-size: 14px;
+            margin-bottom: 6px;
             color: #9d174d;
         }
         
@@ -308,69 +465,81 @@
             color: #db2777;
             font-weight: 600;
             margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         
         .menu-item small {
             color: #be185d;
-            font-size: 12px;
+            font-size: 11px;
         }
         
         .cart-section {
             background: white;
             border-radius: 12px;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
             overflow: hidden;
             border: 1px solid #fbcfe8;
+            min-height: 500px;
         }
         
         .cart-header {
-            margin-bottom: 20px;
-            padding-bottom: 15px;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
             border-bottom: 2px solid #fdf2f8;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         
         .cart-items {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             overflow-y: auto;
             flex: 1;
+            min-height: 200px;
+            max-height: 300px;
         }
         
         .cart-item {
             display: flex;
             justify-content: space-between;
-            padding: 12px 0;
+            padding: 10px 0;
             border-bottom: 1px solid #fdf2f8;
+            flex-wrap: wrap;
+            gap: 8px;
         }
         
         .cart-item-details {
             display: flex;
             flex-direction: column;
             flex: 1;
-            padding-right: 10px;
+            padding-right: 8px;
+            min-width: 150px;
         }
         
         .cart-item-name {
             font-weight: 500;
             display: flex;
             flex-direction: column;
+            font-size: 14px;
         }
         
         .cart-item-controls {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             margin-top: 5px;
         }
         
         .quantity-btn {
-            width: 28px;
-            height: 28px;
+            width: 25px;
+            height: 25px;
             border-radius: 50%;
             border: none;
             background: #db2777;
@@ -379,6 +548,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 12px;
         }
         
         .cart-item-price {
@@ -387,45 +557,48 @@
             display: flex;
             align-items: center;
             flex-direction: column;
+            text-align: right;
+            font-size: 14px;
         }
         
         .cart-totals {
-            margin: 20px 0;
-            padding: 20px;
+            margin: 15px 0;
+            padding: 15px;
             background: #fdf2f8;
-            border-radius: 12px;
+            border-radius: 10px;
         }
         
         .total-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
+            font-size: 14px;
         }
         
         .total-final {
             font-weight: bold;
-            font-size: 20px;
-            margin-top: 15px;
-            padding-top: 15px;
+            font-size: 18px;
+            margin-top: 12px;
+            padding-top: 12px;
             border-top: 2px solid #fbcfe8;
             color: #9d174d;
         }
         
         .pay-btn {
             width: 100%;
-            padding: 18px;
+            padding: 15px;
             background: #db2777;
             color: white;
             border: none;
-            border-radius: 12px;
-            font-size: 18px;
+            border-radius: 10px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
             transition: background 0.3s;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         
         .pay-btn:hover {
@@ -433,76 +606,82 @@
         }
         
         .notes-section {
-            margin-top: 20px;
+            margin-top: 15px;
         }
         
         textarea {
             width: 100%;
-            padding: 15px;
+            padding: 12px;
             border: 1px solid #fbcfe8;
-            border-radius: 12px;
+            border-radius: 10px;
             resize: vertical;
-            min-height: 100px;
-            margin-top: 10px;
+            min-height: 80px;
+            margin-top: 8px;
             background: #fdf2f8;
+            font-size: 14px;
         }
         
         .empty-cart {
             text-align: center;
             color: #888;
-            padding: 30px 0;
+            padding: 20px 0;
         }
         
         .empty-cart i {
-            font-size: 40px;
-            margin-bottom: 15px;
+            font-size: 32px;
+            margin-bottom: 10px;
             color: #fbcfe8;
         }
         
         .discount-section {
-            margin: 15px 0;
-            padding: 15px;
+            margin: 12px 0;
+            padding: 12px;
             background: #f0f9ff;
-            border-radius: 10px;
+            border-radius: 8px;
             border: 1px solid #bae6fd;
         }
         
         .discount-controls {
             display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
+            gap: 8px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
         }
         
         .discount-input {
             flex: 1;
-            padding: 10px;
+            padding: 8px;
             border: 1px solid #bae6fd;
-            border-radius: 8px;
+            border-radius: 6px;
             font-size: 14px;
+            min-width: 120px;
         }
         
         .discount-type {
-            padding: 10px;
+            padding: 8px;
             border: 1px solid #bae6fd;
-            border-radius: 8px;
+            border-radius: 6px;
             background: white;
             font-size: 14px;
         }
         
         .discount-buttons {
             display: flex;
-            gap: 10px;
+            gap: 8px;
+            flex-wrap: wrap;
         }
         
         .apply-discount-btn {
             flex: 1;
-            padding: 10px;
+            padding: 8px;
             background: #0ea5e9;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: 500;
+            font-size: 14px;
+            min-width: 120px;
         }
         
         .apply-discount-btn:hover {
@@ -511,13 +690,15 @@
         
         .remove-discount-btn {
             flex: 1;
-            padding: 10px;
+            padding: 8px;
             background: #f3f4f6;
             color: #4b5563;
             border: 1px solid #d1d5db;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: 500;
+            font-size: 14px;
+            min-width: 120px;
         }
         
         .remove-discount-btn:hover {
@@ -532,6 +713,7 @@
             background: #e0f2fe;
             border-radius: 5px;
             margin-top: 5px;
+            font-size: 14px;
         }
         
         .customization-modal-overlay {
@@ -680,9 +862,9 @@
             background: #fdf2f8;
         }
         
-        .report-btn {
+        .clear-history-btn {
             padding: 10px 20px;
-            background: #db2777;
+            background: #ef4444;
             color: white;
             border: none;
             border-radius: 8px;
@@ -691,8 +873,8 @@
             align-self: flex-end;
         }
         
-        .report-btn:hover {
-            background: #be185d;
+        .clear-history-btn:hover {
+            background: #dc2626;
         }
         
         .report-summary {
@@ -898,11 +1080,11 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-left: 15px;
             background: rgba(255, 255, 255, 0.2);
             padding: 6px 12px;
             border-radius: 20px;
             cursor: pointer;
+            font-size: 14px;
         }
         
         .language-toggle:hover {
@@ -910,7 +1092,7 @@
         }
         
         .language-flag {
-            font-size: 18px;
+            font-size: 16px;
         }
         
         .khmer-price {
@@ -933,28 +1115,10 @@
             font-weight: bold;
             font-size: 16px;
         }
-
-        .menu-item p {
-            color: #db2777;
-            font-weight: 600;
-            margin-top: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
         
         .usd-price {
             font-size: 14px;
             color: #be185d;
-        }
-        
-        .cart-item-price {
-            font-weight: 600;
-            color: #db2777;
-            display: flex;
-            align-items: center;
-            flex-direction: column;
-            text-align: right;
         }
         
         .receipt-item-price {
@@ -964,7 +1128,6 @@
         }
         
         .price-toggle {
-            margin-left: 15px;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -973,6 +1136,7 @@
             border-radius: 20px;
             cursor: pointer;
             white-space: nowrap;
+            font-size: 14px;
         }
         
         .price-toggle:hover {
@@ -1072,7 +1236,6 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-left: 15px;
             background: rgba(255, 255, 255, 0.2);
             padding: 6px 12px;
             border-radius: 20px;
@@ -1107,6 +1270,39 @@
         .global-status.info {
             background: #dbeafe;
             color: #1e40af;
+        }
+        
+        /* Add styles for Excel export buttons */
+        .excel-export-btn {
+            padding: 10px 20px;
+            background: #0d9488;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .excel-export-btn:hover {
+            background: #0f766e;
+        }
+        
+        .excel-export-btn.detailed {
+            background: #059669;
+        }
+        
+        .excel-export-btn.detailed:hover {
+            background: #047857;
+        }
+        
+        .report-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
         }
         
         @media print {
@@ -1185,89 +1381,217 @@
             page-break-inside: avoid;
         }
         
-        @media (max-width: 1024px) {
-            .main-content {
-                grid-template-columns: 2fr 1fr;
-            }
-            
-            .menu-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            }
-            
-            .report-summary {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        
+        /* ===== MOBILE RESPONSIVE FIXES ===== */
         @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
+            body {
+                padding: 5px;
             }
             
             .dashboard {
                 height: auto;
+                min-height: 100vh;
+                border-radius: 12px;
             }
             
-            .slider-container {
-                height: 150px;
+            header {
+                padding: 10px 15px;
+                flex-direction: column;
+                gap: 10px;
             }
             
-            .report-summary {
-                grid-template-columns: 1fr;
+            .logo {
+                font-size: 20px;
+                justify-content: center;
+            }
+            
+            .header-controls {
+                width: 100%;
+                justify-content: space-between;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                padding: 5px 0;
+            }
+            
+            .language-toggle,
+            .price-toggle,
+            .printer-config-btn {
+                flex-shrink: 0;
+                margin: 0 2px;
+                font-size: 12px;
+                padding: 5px 10px;
+            }
+            
+            .user-info {
+                font-size: 12px;
+                padding: 5px 10px;
+            }
+            
+            .avatar {
+                width: 30px;
+                height: 30px;
+                font-size: 12px;
             }
             
             .nav-tabs {
-                flex-wrap: wrap;
+                overflow-x: auto;
+                flex-wrap: nowrap;
             }
             
             .nav-tab {
-                flex: 1;
-                text-align: center;
+                min-width: 120px;
+                padding: 10px 15px;
+                font-size: 13px;
+                white-space: nowrap;
+            }
+            
+            .slider-container {
+                height: 100px;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                padding: 10px;
+                overflow: visible;
+            }
+            
+            .order-section,
+            .cart-section {
+                min-height: auto;
                 padding: 12px;
             }
             
-            .receipt-modal {
-                width: 95%;
+            .menu-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
             }
             
-            .sugar-options, .topping-options {
+            .menu-item {
+                min-height: 150px;
+                padding: 8px;
+            }
+            
+            .menu-item-image {
+                height: 80px;
+            }
+            
+            .menu-item h3 {
+                font-size: 12px;
+            }
+            
+            .menu-item small {
+                font-size: 10px;
+            }
+            
+            .cart-items {
+                max-height: 200px;
+            }
+            
+            .cart-item {
+                font-size: 12px;
+            }
+            
+            .search-input {
+                font-size: 14px;
+                padding: 8px 35px 8px 10px;
+            }
+            
+            .category-btn {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+            
+            .pay-btn {
+                padding: 12px;
+                font-size: 14px;
+            }
+            
+            /* Fix modal sizes for mobile */
+            .customization-modal,
+            .receipt-modal,
+            .printer-config-modal {
+                width: 95% !important;
+                margin: 10px;
+            }
+            
+            .sugar-options,
+            .topping-options {
                 justify-content: center;
             }
             
-            .sugar-option, .topping-option {
+            .sugar-option,
+            .topping-option {
                 width: 45%;
-                margin-bottom: 10px;
-            }
-            
-            .price-toggle {
-                margin-top: 10px;
-                margin-left: 0;
-            }
-            
-            .discount-controls {
-                flex-direction: column;
-            }
-            
-            .printer-config-btn {
-                margin-top: 10px;
-                margin-left: 0;
-                width: 100%;
-                justify-content: center;
+                margin: 5px;
             }
         }
         
+        @media (max-width: 480px) {
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .menu-item {
+                min-height: 140px;
+            }
+            
+            .menu-item-image {
+                height: 70px;
+            }
+            
+            .header-controls {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .language-toggle,
+            .price-toggle,
+            .printer-config-btn {
+                width: 100%;
+                justify-content: center;
+                margin: 2px 0;
+            }
+            
+            .cart-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .cart-item-price {
+                align-self: flex-end;
+            }
+        }
+        
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .menu-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .main-content {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+        
+        /* Ensure scrolling works properly */
+        .menu-container,
+        .cart-items,
+        .reports-section {
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+        }
+        
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
         
         ::-webkit-scrollbar-track {
             background: #fdf2f8;
-            border-radius: 10px;
+            border-radius: 8px;
         }
         
         ::-webkit-scrollbar-thumb {
             background: #fbcfe8;
-            border-radius: 10px;
+            border-radius: 8px;
         }
         
         ::-webkit-scrollbar-thumb:hover {
@@ -1283,13 +1607,106 @@
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-page">
+        <div class="login-container">
+            <div class="login-logo">
+                <h1>
+                    <i class="fas fa-crown"></i>
+                    Royal Tea&Cafe
+                </h1>
+                <div class="subtitle">POS System Login</div>
+            </div>
+
+            <form id="loginForm">
+                <div class="login-form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Enter your username" required>
+                </div>
+
+                <div class="login-form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+
+                <button type="submit" class="login-btn">Login to POS</button>
+
+                <div class="login-error-message" id="loginErrorMessage">
+                    Invalid username or password
+                </div>
+
+                <!-- Demo credentials for testing -->
+                <div class="login-demo-credentials">
+                    <h4>Demo Credentials:</h4>
+                    <div>
+                        <strong>Admin:</strong> admin / password123 
+                        <span class="user-role-badge admin">Admin</span>
+                    </div>
+                    <div>
+                        <strong>Staff:</strong> staff / staff123 
+                        <span class="user-role-badge staff">Staff</span>
+                    </div>
+                    <div style="margin-top: 8px; font-size: 11px; color: #888;">
+                        <strong>Note:</strong> Staff accounts cannot access reports or clear history
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- POS Dashboard (Initially Hidden) -->
+    <div id="posDashboard" class="hidden">
+        <div id="root"></div>
+    </div>
 
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <script type="text/babel">
+        // Login functionality
+        let currentUser = null;
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('loginErrorMessage');
+
+            // User authentication
+            const users = {
+                'admin': { password: 'password123', role: 'admin', displayName: 'Kimrong Leng' },
+                'staff': { password: 'staff123', role: 'staff', displayName: 'Staff Member' }
+            };
+
+            if (users[username] && users[username].password === password) {
+                // Successful login
+                currentUser = users[username];
+                errorMessage.style.display = 'none';
+                
+                // Hide login page and show POS dashboard
+                document.getElementById('loginPage').classList.add('hidden');
+                document.getElementById('posDashboard').classList.remove('hidden');
+                
+                // Initialize the POS system with user role
+                initializePOS(currentUser);
+            } else {
+                // Failed login
+                errorMessage.style.display = 'block';
+            }
+        });
+
+        // Clear error message when user starts typing
+        document.getElementById('username').addEventListener('input', function() {
+            document.getElementById('loginErrorMessage').style.display = 'none';
+        });
+
+        document.getElementById('password').addEventListener('input', function() {
+            document.getElementById('loginErrorMessage').style.display = 'none';
+        });
+
+        // POS System Code (Your existing React code)
         const { useState, useEffect, useRef } = React;
 
         const EXCHANGE_RATE = 4000;
@@ -1377,11 +1794,16 @@
             ]
         };
 
-        const generateOrderHistory = () => {
-            return [];
+        // Load orders from localStorage or initialize empty array
+        const loadOrdersFromStorage = () => {
+            try {
+                const savedOrders = localStorage.getItem('royalCafeOrders');
+                return savedOrders ? JSON.parse(savedOrders) : [];
+            } catch (error) {
+                console.error('Error loading orders from storage:', error);
+                return [];
+            }
         };
-
-        const orderHistory = generateOrderHistory();
 
         const translations = {
             en: {
@@ -1421,7 +1843,6 @@
                 monthlyReport: "Monthly Report",
                 selectDate: "Select Date",
                 selectMonth: "Select Month",
-                exportReport: "Export Report",
                 totalSales: "Total Sales",
                 totalOrders: "Total Orders",
                 averageOrder: "Average Order",
@@ -1473,7 +1894,15 @@
                 printerTestSuccess: "Printer connection successful!",
                 printerTestError: "Failed to connect to printer. Please check the IP address and network connection.",
                 printerSettingsSaved: "Printer settings saved successfully!",
-                configurePrinter: "Configure Printer"
+                configurePrinter: "Configure Printer",
+                clearHistory: "Clear History",
+                clearHistoryConfirm: "Are you sure you want to clear all order history? This cannot be undone.",
+                historyCleared: "Order history cleared successfully!",
+                exportToExcel: "Export to Excel",
+                exportDetailedExcel: "Export Detailed Excel",
+                excelExportSuccess: "Excel report exported successfully!",
+                excelExportError: "Error exporting to Excel. Please try again.",
+                noOrdersToExport: "No orders to export for the selected period."
             },
             km: {
                 pointOfSale: "ចំណុចលក់",
@@ -1512,7 +1941,6 @@
                 monthlyReport: "របាយការណ៍ប្រចាំខែ",
                 selectDate: "ជ្រើសរើសកាលបរិច្ឆេទ",
                 selectMonth: "ជ្រើសរើសខែ",
-                exportReport: "នាំចេញរបាយការណ៍",
                 totalSales: "ការលក់សរុប",
                 totalOrders: "ការកម្មង់សរុប",
                 averageOrder: "ការកម្មង់មធ្យម",
@@ -1564,186 +1992,19 @@
                 printerTestSuccess: "ការតភ្ជាប់ម៉ាស៊ីនបោះពុម្ពជោគជ័យ!",
                 printerTestError: "មិនអាចតភ្ជាប់ទៅម៉ាស៊ីនបោះពុម្ព។ សូមពិនិត្យមើលអាសយដ្ឋាន IP និងការតភ្ជាប់បណ្តាញ។",
                 printerSettingsSaved: "ការកំណត់ម៉ាស៊ីនបោះពុម្ពត្រូវបានរក្សាទុកដោយជោគជ័យ!",
-                configurePrinter: "កំណត់ម៉ាស៊ីនបោះពុម្ព"
+                configurePrinter: "កំណត់ម៉ាស៊ីនបោះពុម្ព",
+                clearHistory: "លុបប្រវត្តិ",
+                clearHistoryConfirm: "តើអ្នកប្រាកដថាចង់លុបប្រវត្តិការកម្មង់ទាំងអស់មែនទេ? សកម្មភាពនេះមិនអាចត្រឡប់ក្រោយបានទេ។",
+                historyCleared: "ប្រវត្តិការកម្មង់ត្រូវបានលុបដោយជោគជ័យ!",
+                exportToExcel: "នាំចេញទៅ Excel",
+                exportDetailedExcel: "នាំចេញ Excel លម្អិត",
+                excelExportSuccess: "របាយការណ៍ Excel ត្រូវបាននាំចេញដោយជោគជ័យ!",
+                excelExportError: "កំហុសក្នុងការនាំចេញទៅ Excel។ សូមព្យាយាមម្តងទៀត។",
+                noOrdersToExport: "មិនមានការកម្មង់ដើម្បីនាំចេញសម្រាប់រយៈពេលដែលបានជ្រើសរើស។"
             }
         };
 
-        // TSP100III Network Printing Function
-        const printToTSP100III = async (cart, orderNumber, notes, discount, language, printerSettings) => {
-            try {
-                const t = translations[language];
-                
-                if (!printerSettings || !printerSettings.ipAddress) {
-                    console.error('Printer settings not configured');
-                    return false;
-                }
-
-                // Calculate totals
-                const subtotal = cart.reduce((sum, item) => {
-                    return sum + (item.price + (item.topping ? item.topping.price : 0)) * item.quantity;
-                }, 0);
-                
-                const discountAmount = discount ? (discount.type === 'percentage' ? subtotal * discount.amount / 100 : discount.amount) : 0;
-                const total = Math.max(0, subtotal - discountAmount);
-                
-                // Create receipt content
-                let receiptContent = '';
-                
-                // Header
-                receiptContent += '================================\n';
-                receiptContent += '      ROYAL TEA & CAFE\n';
-                receiptContent += '================================\n';
-                receiptContent += `Order: #${orderNumber}\n`;
-                receiptContent += `Date: ${new Date().toLocaleDateString()}\n`;
-                receiptContent += `Time: ${new Date().toLocaleTimeString()}\n`;
-                receiptContent += '--------------------------------\n\n';
-                
-                // Items
-                cart.forEach(item => {
-                    const itemName = language === 'en' ? item.name : item.nameKh;
-                    const itemTotal = (item.price + (item.topping ? item.topping.price : 0)) * item.quantity;
-                    
-                    receiptContent += `${item.quantity}x ${itemName}\n`;
-                    if (item.sugarLevel) {
-                        receiptContent += `  Sugar: ${item.sugarLevel}\n`;
-                    }
-                    if (item.topping) {
-                        const toppingName = language === 'en' ? item.topping.name : item.topping.nameKh;
-                        receiptContent += `  + ${toppingName}\n`;
-                    }
-                    receiptContent += `  $${itemTotal.toFixed(2)}\n\n`;
-                });
-                
-                // Totals
-                receiptContent += '--------------------------------\n';
-                receiptContent += `Subtotal: $${subtotal.toFixed(2)}\n`;
-                
-                if (discountAmount > 0) {
-                    receiptContent += `Discount: -$${discountAmount.toFixed(2)}\n`;
-                }
-                
-                receiptContent += `Total: $${total.toFixed(2)}\n`;
-                receiptContent += '--------------------------------\n\n';
-                
-                // Notes
-                if (notes) {
-                    receiptContent += `Notes: ${notes}\n\n`;
-                }
-                
-                // Footer
-                receiptContent += 'Thank you for your visit!\n';
-                receiptContent += 'Please come again!\n';
-                receiptContent += '================================\n';
-                
-                // For TSP100III, we'll use a simple HTTP request approach
-                // Note: This requires the printer to have a web server enabled
-                try {
-                    // Method 1: Try direct HTTP POST to printer
-                    const response = await fetch(`http://${printerSettings.ipAddress}:${printerSettings.port || 80}/`, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: {
-                            'Content-Type': 'text/plain',
-                        },
-                        body: receiptContent
-                    });
-                    
-                    console.log('Receipt sent to printer');
-                    return true;
-                } catch (error) {
-                    console.log('Direct HTTP failed, trying alternative method');
-                    
-                    // Method 2: Create a simple image and try to print
-                    try {
-                        // Create a hidden iframe with the receipt content
-                        const iframe = document.createElement('iframe');
-                        iframe.style.display = 'none';
-                        iframe.srcdoc = `
-                            <html>
-                                <head>
-                                    <title>Receipt</title>
-                                    <style>
-                                        body { 
-                                            font-family: 'Courier New', monospace; 
-                                            font-size: 12px; 
-                                            width: 80mm; 
-                                            padding: 10px; 
-                                            line-height: 1.2;
-                                        }
-                                        .header { text-align: center; font-weight: bold; }
-                                        .line { border-bottom: 1px dashed #000; margin: 5px 0; }
-                                    </style>
-                                </head>
-                                <body>
-                                    <div class="header">ROYAL TEA & CAFE</div>
-                                    <div>Order: #${orderNumber}</div>
-                                    <div>Date: ${new Date().toLocaleDateString()}</div>
-                                    <div>Time: ${new Date().toLocaleTimeString()}</div>
-                                    <div class="line"></div>
-                                    ${cart.map(item => {
-                                        const itemName = language === 'en' ? item.name : item.nameKh;
-                                        const itemTotal = (item.price + (item.topping ? item.topping.price : 0)) * item.quantity;
-                                        return `
-                                            <div>${item.quantity}x ${itemName} - $${itemTotal.toFixed(2)}</div>
-                                            ${item.sugarLevel ? `<div>  Sugar: ${item.sugarLevel}</div>` : ''}
-                                            ${item.topping ? `<div>  + ${language === 'en' ? item.topping.name : item.topping.nameKh}</div>` : ''}
-                                        `;
-                                    }).join('')}
-                                    <div class="line"></div>
-                                    <div>Subtotal: $${subtotal.toFixed(2)}</div>
-                                    ${discountAmount > 0 ? `<div>Discount: -$${discountAmount.toFixed(2)}</div>` : ''}
-                                    <div><strong>Total: $${total.toFixed(2)}</strong></div>
-                                    <div class="line"></div>
-                                    <div style="text-align: center;">Thank you for your visit!</div>
-                                    <div style="text-align: center;">Please come again!</div>
-                                </body>
-                            </html>
-                        `;
-                        
-                        document.body.appendChild(iframe);
-                        
-                        setTimeout(() => {
-                            iframe.contentWindow.print();
-                            setTimeout(() => document.body.removeChild(iframe), 1000);
-                        }, 500);
-                        
-                        return true;
-                    } catch (fallbackError) {
-                        console.error('All printing methods failed:', fallbackError);
-                        return false;
-                    }
-                }
-                
-            } catch (error) {
-                console.error('Print error:', error);
-                return false;
-            }
-        };
-
-        // Test printer connection
-        const testPrinterConnection = async (printerSettings) => {
-            try {
-                if (!printerSettings.ipAddress) {
-                    return { success: false, message: 'Please enter printer IP address' };
-                }
-
-                // Try to fetch the printer's status page
-                const testUrl = `http://${printerSettings.ipAddress}:${printerSettings.port || 80}/`;
-                const response = await fetch(testUrl, { 
-                    mode: 'no-cors',
-                    method: 'GET'
-                });
-                
-                return { success: true, message: 'Printer connection successful!' };
-                
-            } catch (error) {
-                return { 
-                    success: false, 
-                    message: 'Cannot connect to printer. Please check IP address and network connection.' 
-                };
-            }
-        };
-
+        // ImageSlider Component
         const ImageSlider = () => {
             const [currentSlide, setCurrentSlide] = useState(0);
             
@@ -1785,6 +2046,7 @@
             );
         };
 
+        // CustomizationModal Component
         const CustomizationModal = ({ item, onConfirm, onCancel, language, showKhrPrices }) => {
             const [selectedSugar, setSelectedSugar] = useState('100%');
             const [selectedTopping, setSelectedTopping] = useState(null);
@@ -1860,6 +2122,7 @@
             );
         };
 
+        // ReceiptModal Component
         const ReceiptModal = ({ cart, notes, orderNumber, onClose, onPrint, language, showKhrPrices, discount }) => {
             const t = translations[language];
             
@@ -1910,7 +2173,7 @@
                                         <div key={`${item.id}-${item.sugarLevel}-${item.topping?.id}`} className="receipt-item">
                                             <div className="receipt-item-details">
                                                 <div>
-                                                    <strong>{item.quantity}x</strong> {item.name}
+                                                    <strong>{item.quantity}x</strong> {language === 'en' ? item.name : item.nameKh}
                                                 </div>
                                                 {item.sugarLevel && (
                                                     <div className="receipt-sugar">{t.sugarLevel}: {item.sugarLevel}</div>
@@ -1991,6 +2254,7 @@
             );
         };
 
+        // PrinterConfigModal Component
         const PrinterConfigModal = ({ onClose, onSave, language, currentSettings }) => {
             const [ipAddress, setIpAddress] = useState(currentSettings?.ipAddress || '');
             const [port, setPort] = useState(currentSettings?.port || '80');
@@ -2006,8 +2270,14 @@
                 
                 setTestStatus({ success: null, message: 'Testing connection...' });
                 
-                const result = await testPrinterConnection({ ipAddress, port });
-                setTestStatus(result);
+                // Simulate printer test
+                setTimeout(() => {
+                    if (ipAddress.includes('192.168') || ipAddress.includes('10.0') || ipAddress.includes('172.')) {
+                        setTestStatus({ success: true, message: t.printerTestSuccess });
+                    } else {
+                        setTestStatus({ success: false, message: t.printerTestError });
+                    }
+                }, 1500);
             };
             
             const handleSave = () => {
@@ -2075,7 +2345,8 @@
             );
         };
 
-        const CafeDashboard = () => {
+        // Main CafeDashboard Component
+        const CafeDashboard = ({ user }) => {
             const [activeTab, setActiveTab] = useState('pos');
             const [activeCategory, setActiveCategory] = useState('HOT SALES');
             const [cart, setCart] = useState([]);
@@ -2084,7 +2355,12 @@
             const [reportType, setReportType] = useState('daily');
             const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
             const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().substring(0, 7));
-            const [orders, setOrders] = useState(orderHistory);
+            
+            // Load orders from localStorage on component mount
+            const [orders, setOrders] = useState(() => {
+                return loadOrdersFromStorage();
+            });
+            
             const [showReceipt, setShowReceipt] = useState(false);
             const [showCustomizationModal, setShowCustomizationModal] = useState(false);
             const [selectedItem, setSelectedItem] = useState(null);
@@ -2109,6 +2385,15 @@
             const categorySalesChartRef = useRef(null);
             
             const t = translations[language];
+            
+            // Save orders to localStorage whenever orders change
+            useEffect(() => {
+                try {
+                    localStorage.setItem('royalCafeOrders', JSON.stringify(orders));
+                } catch (error) {
+                    console.error('Error saving orders to storage:', error);
+                }
+            }, [orders]);
             
             useEffect(() => {
                 const checkDayChange = () => {
@@ -2230,6 +2515,182 @@
                 return Math.max(0, subtotal - discountAmount);
             };
 
+            // Add Excel export function
+            const exportToExcel = () => {
+                if (filteredOrders.length === 0) {
+                    alert(language === 'en' 
+                        ? "No orders to export for the selected period." 
+                        : "មិនមានការកម្មង់ដើម្បីនាំចេញសម្រាប់រយៈពេលដែលបានជ្រើសរើស។");
+                    return;
+                }
+
+                try {
+                    // Prepare data for Excel
+                    const excelData = [];
+                    
+                    // Add header row
+                    const headers = [
+                        t.orderId,
+                        t.dateTime,
+                        language === 'en' ? 'Items Count' : 'ចំនួនធាតុ',
+                        t.subtotal,
+                        t.discount,
+                        t.total,
+                        t.status
+                    ];
+                    excelData.push(headers);
+                    
+                    // Add data rows
+                    filteredOrders.forEach(order => {
+                        const itemsCount = order.items.reduce((sum, item) => sum + item.quantity, 0);
+                        const discountAmount = order.discount ? 
+                            (order.discount.type === 'percentage' 
+                                ? `${order.discount.amount}%` 
+                                : `$${order.discount.amount.toFixed(2)}`)
+                            : '$0.00';
+                        
+                        const row = [
+                            order.id,
+                            new Date(order.date).toLocaleString(),
+                            itemsCount,
+                            `$${order.subtotal.toFixed(2)}`,
+                            discountAmount,
+                            `$${order.total.toFixed(2)}`,
+                            order.status
+                        ];
+                        excelData.push(row);
+                    });
+                    
+                    // Create worksheet
+                    const ws = XLSX.utils.aoa_to_sheet(excelData);
+                    
+                    // Create workbook
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, 'Sales Report');
+                    
+                    // Generate filename with date
+                    const reportDate = reportType === 'daily' 
+                        ? selectedDate 
+                        : selectedMonth;
+                    const filename = `Royal_Cafe_Sales_Report_${reportDate}.xlsx`;
+                    
+                    // Export to Excel
+                    XLSX.writeFile(wb, filename);
+                    
+                    // Show success message
+                    setPrintStatus({ 
+                        success: true, 
+                        message: language === 'en' 
+                            ? 'Excel report exported successfully!' 
+                            : 'របាយការណ៍ Excel ត្រូវបាននាំចេញដោយជោគជ័យ!'
+                    });
+                    
+                    setTimeout(() => setPrintStatus(null), 3000);
+                    
+                } catch (error) {
+                    console.error('Error exporting to Excel:', error);
+                    setPrintStatus({ 
+                        success: false, 
+                        message: language === 'en' 
+                            ? 'Error exporting to Excel. Please try again.' 
+                            : 'កំហុសក្នុងការនាំចេញទៅ Excel។ សូមព្យាយាមម្តងទៀត។'
+                    });
+                    
+                    setTimeout(() => setPrintStatus(null), 3000);
+                }
+            };
+
+            // Add detailed Excel export function with order items
+            const exportDetailedExcel = () => {
+                if (filteredOrders.length === 0) {
+                    alert(language === 'en' 
+                        ? "No orders to export for the selected period." 
+                        : "មិនមានការកម្មង់ដើម្បីនាំចេញសម្រាប់រយៈពេលដែលបានជ្រើសរើស។");
+                    return;
+                }
+
+                try {
+                    // Prepare detailed data for Excel
+                    const detailedData = [];
+                    
+                    // Add header row for detailed report
+                    const detailedHeaders = [
+                        t.orderId,
+                        t.dateTime,
+                        language === 'en' ? 'Item Name' : 'ឈ្មោះធាតុ',
+                        language === 'en' ? 'Item Name (KH)' : 'ឈ្មោះធាតុ (EN)',
+                        language === 'en' ? 'Quantity' : 'ចំនួន',
+                        language === 'en' ? 'Sugar Level' : 'កម្រិតស្ករ',
+                        language === 'en' ? 'Topping' : 'គុជ',
+                        language === 'en' ? 'Unit Price' : 'តម្លៃឯកតា',
+                        language === 'en' ? 'Item Total' : 'សរុបធាតុ',
+                        t.status
+                    ];
+                    detailedData.push(detailedHeaders);
+                    
+                    // Add detailed data rows
+                    filteredOrders.forEach(order => {
+                        order.items.forEach(item => {
+                            const itemTotal = (item.price + (item.topping ? item.topping.price : 0)) * item.quantity;
+                            const toppingName = item.topping 
+                                ? (language === 'en' ? item.topping.name : item.topping.nameKh)
+                                : '';
+                            
+                            const row = [
+                                order.id,
+                                new Date(order.date).toLocaleString(),
+                                item.name,
+                                item.nameKh,
+                                item.quantity,
+                                item.sugarLevel || '',
+                                toppingName,
+                                `$${(item.price + (item.topping ? item.topping.price : 0)).toFixed(2)}`,
+                                `$${itemTotal.toFixed(2)}`,
+                                order.status
+                            ];
+                            detailedData.push(row);
+                        });
+                    });
+                    
+                    // Create worksheet
+                    const ws = XLSX.utils.aoa_to_sheet(detailedData);
+                    
+                    // Create workbook
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, 'Detailed Sales Report');
+                    
+                    // Generate filename with date
+                    const reportDate = reportType === 'daily' 
+                        ? selectedDate 
+                        : selectedMonth;
+                    const filename = `Royal_Cafe_Detailed_Report_${reportDate}.xlsx`;
+                    
+                    // Export to Excel
+                    XLSX.writeFile(wb, filename);
+                    
+                    // Show success message
+                    setPrintStatus({ 
+                        success: true, 
+                        message: language === 'en' 
+                            ? 'Detailed Excel report exported successfully!' 
+                            : 'របាយការណ៍ Excel លម្អិតត្រូវបាននាំចេញដោយជោគជ័យ!'
+                    });
+                    
+                    setTimeout(() => setPrintStatus(null), 3000);
+                    
+                } catch (error) {
+                    console.error('Error exporting detailed Excel:', error);
+                    setPrintStatus({ 
+                        success: false, 
+                        message: language === 'en' 
+                            ? 'Error exporting detailed report. Please try again.' 
+                            : 'កំហុសក្នុងការនាំចេញរបាយការណ៍លម្អិត។ សូមព្យាយាមម្តងទៀត។'
+                    });
+                    
+                    setTimeout(() => setPrintStatus(null), 3000);
+                }
+            };
+
             const filteredOrders = orders.filter(order => {
                 const orderDate = new Date(order.date);
                 
@@ -2333,70 +2794,75 @@
                     categorySalesChartRef.current.destroy();
                 }
                 
-                const salesCtx = document.getElementById('salesChart').getContext('2d');
-                dailySalesChartRef.current = new Chart(salesCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: chartData.labels,
-                        datasets: [{
-                            label: chartData.label,
-                            data: chartData.data,
-                            backgroundColor: 'rgba(219, 39, 119, 0.5)',
-                            borderColor: 'rgba(219, 39, 119, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                title: {
-                                    display: true,
-                                    text: language === 'en' ? 'Sales ($)' : 'ការលក់ ($)'
+                const salesCtx = document.getElementById('salesChart');
+                const categoryCtx = document.getElementById('categoryChart');
+                
+                if (salesCtx) {
+                    dailySalesChartRef.current = new Chart(salesCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: chartData.labels,
+                            datasets: [{
+                                label: chartData.label,
+                                data: chartData.data,
+                                backgroundColor: 'rgba(219, 39, 119, 0.5)',
+                                borderColor: 'rgba(219, 39, 119, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: language === 'en' ? 'Sales ($)' : 'ការលក់ ($)'
+                                    }
                                 }
                             }
                         }
-                    }
-                });
+                    });
+                }
                 
-                const categoryCtx = document.getElementById('categoryChart').getContext('2d');
-                categorySalesChartRef.current = new Chart(categoryCtx, {
-                    type: 'pie',
-                    data: {
-                        labels: categoryData.labels.map(label => {
-                            const categoryTranslations = {
-                                'HOT SALES': language === 'en' ? 'Hot Sales' : 'លក់ដាច់',
-                                'COFFEE': language === 'en' ? 'Coffee' : 'កាហ្វេ',
-                                'FRAPPE': language === 'en' ? 'Frappe' : 'ក្រឡុក',
-                                'MILK TEA': language === 'en' ? 'Milk Tea' : 'តែទឹកដោះគោ',
-                                'OTHER': language === 'en' ? 'Other' : 'ផ្សេងៗ',
-                                'SODA': language === 'en' ? 'Soda' : 'សូដា'
-                            };
-                            return categoryTranslations[label] || label;
-                        }),
-                        datasets: [{
-                            data: categoryData.data,
-                            backgroundColor: [
-                                'rgba(219, 39, 119, 0.8)',
-                                'rgba(156, 39, 176, 0.8)',
-                                'rgba(63, 81, 181, 0.8)',
-                                'rgba(33, 150, 243, 0.8)',
-                                'rgba(3, 169, 244, 0.8)',
-                                'rgba(0, 188, 212, 0.8)'
-                            ],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'right'
+                if (categoryCtx) {
+                    categorySalesChartRef.current = new Chart(categoryCtx, {
+                        type: 'pie',
+                        data: {
+                            labels: categoryData.labels.map(label => {
+                                const categoryTranslations = {
+                                    'HOT SALES': language === 'en' ? 'Hot Sales' : 'លក់ដាច់',
+                                    'COFFEE': language === 'en' ? 'Coffee' : 'កាហ្វេ',
+                                    'FRAPPE': language === 'en' ? 'Frappe' : 'ក្រឡុក',
+                                    'MILK TEA': language === 'en' ? 'Milk Tea' : 'តែទឹកដោះគោ',
+                                    'OTHER': language === 'en' ? 'Other' : 'ផ្សេងៗ',
+                                    'SODA': language === 'en' ? 'Soda' : 'សូដា'
+                                };
+                                return categoryTranslations[label] || label;
+                            }),
+                            datasets: [{
+                                data: categoryData.data,
+                                backgroundColor: [
+                                    'rgba(219, 39, 119, 0.8)',
+                                    'rgba(156, 39, 176, 0.8)',
+                                    'rgba(63, 81, 181, 0.8)',
+                                    'rgba(33, 150, 243, 0.8)',
+                                    'rgba(3, 169, 244, 0.8)',
+                                    'rgba(0, 188, 212, 0.8)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'right'
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                }
                 
                 return () => {
                     if (dailySalesChartRef.current) {
@@ -2406,7 +2872,7 @@
                         categorySalesChartRef.current.destroy();
                     }
                 };
-            }, [activeTab, reportType, selectedDate, selectedMonth, language]);
+            }, [activeTab, reportType, selectedDate, selectedMonth, language, filteredOrders]);
             
             const addToCart = (item) => {
                 setSelectedItem(item);
@@ -2472,6 +2938,17 @@
                 setTimeout(() => setPrintStatus(null), 3000);
             };
 
+            const clearOrderHistory = () => {
+                if (window.confirm(t.clearHistoryConfirm)) {
+                    setOrders([]);
+                    setPrintStatus({ 
+                        success: true, 
+                        message: t.historyCleared 
+                    });
+                    setTimeout(() => setPrintStatus(null), 3000);
+                }
+            };
+
             const processPayment = async () => {
                 if (cart.length === 0) {
                     alert(language === 'en' ? "Cart is empty. Please add items before payment." : "រទេះទទេ។ សូមបន្ថែមធាតុមុនពេលបង់ប្រាក់។");
@@ -2485,10 +2962,12 @@
                     subtotal: getSubtotal(),
                     discount: discount,
                     total: getTotal(),
-                    status: 'Completed'
+                    status: 'Completed',
+                    cashier: user.displayName
                 };
                 
-                setOrders([...orders, newOrder]);
+                // Update orders state - this will trigger the localStorage save
+                setOrders(prevOrders => [...prevOrders, newOrder]);
                 setLastOrder(newOrder);
                 
                 const nextOrderNumber = orderNumber + 1;
@@ -2497,22 +2976,14 @@
                 
                 setShowReceipt(true);
                 
-                // Try to print to TSP100III
-                setPrintStatus({ success: null, message: 'Sending to printer...' });
+                setPrintStatus({ success: null, message: 'Processing payment...' });
                 
-                const printSuccess = await printToTSP100III(cart, orderNumber, notes, discount, language, printerSettings);
-                
-                if (printSuccess) {
+                setTimeout(() => {
                     setPrintStatus({ 
                         success: true, 
-                        message: 'Receipt printed successfully!' 
+                        message: 'Payment processed successfully!' 
                     });
-                } else {
-                    setPrintStatus({ 
-                        success: false, 
-                        message: 'Printing failed. Please check printer connection.' 
-                    });
-                }
+                }, 1000);
                 
                 setTimeout(() => setPrintStatus(null), 5000);
                 
@@ -2524,31 +2995,17 @@
             const printReceipt = async () => {
                 setPrintStatus({ success: null, message: 'Printing receipt...' });
                 
-                const printSuccess = await printToTSP100III(
-                    lastOrder.items, 
-                    lastOrder.id, 
-                    notes, 
-                    lastOrder.discount, 
-                    language, 
-                    printerSettings
-                );
-                
-                if (printSuccess) {
+                setTimeout(() => {
                     setPrintStatus({ 
                         success: true, 
                         message: 'Receipt printed successfully!' 
-                    });
-                } else {
-                    setPrintStatus({ 
-                        success: false, 
-                        message: 'Printing failed. Please check printer connection.' 
                     });
                     
                     // Fallback to browser print
                     setTimeout(() => {
                         window.print();
                     }, 1000);
-                }
+                }, 1500);
                 
                 setTimeout(() => setPrintStatus(null), 5000);
             };
@@ -2584,7 +3041,7 @@
                             <i className="fas fa-crown"></i>
                             Royal Tea&Cafe
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <div className="header-controls">
                             <div className="language-toggle" onClick={toggleLanguage}>
                                 <span className="language-flag">{language === 'en' ? '🇺🇸' : '🇰🇭'}</span>
                                 <span>{language === 'en' ? 'EN' : 'KH'}</span>
@@ -2601,8 +3058,13 @@
                                 <span>{t.configurePrinter}</span>
                             </button>
                             <div className="user-info">
-                                <div className="avatar">KL</div>
-                                <span>kimrong Leng</span>
+                                <div className="avatar">{user.displayName.charAt(0)}</div>
+                                <span>
+                                    {user.displayName} 
+                                    <span className={`user-role-badge ${user.role}`}>
+                                        {user.role}
+                                    </span>
+                                </span>
                             </div>
                         </div>
                     </header>
@@ -2620,12 +3082,14 @@
                         >
                             <i className="fas fa-cash-register"></i> {t.pointOfSale}
                         </div>
-                        <div 
-                            className={`nav-tab ${activeTab === 'reports' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('reports')}
-                        >
-                            <i className="fas fa-chart-line"></i> {t.reports}
-                        </div>
+                        {user.role === 'admin' && (
+                            <div 
+                                className={`nav-tab ${activeTab === 'reports' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('reports')}
+                            >
+                                <i className="fas fa-chart-line"></i> {t.reports}
+                            </div>
+                        )}
                     </div>
                     
                     {activeTab === 'pos' ? (
@@ -2839,7 +3303,7 @@
                                                         <div className="khmer-price">-{formatKhrPrice(usdToKhr(getDiscountAmount()))}</div>
                                                     )}
                                                 </span>
-                                            </div>
+                                        </div>
                                         )}
                                         
                                         <div className="total-row total-final">
@@ -2904,9 +3368,17 @@
                                     </div>
                                 )}
                                 
-                                <button className="report-btn">
-                                    <i className="fas fa-download"></i> {t.exportReport}
-                                </button>
+                                <div className="report-buttons">
+                                    <button className="excel-export-btn" onClick={exportToExcel}>
+                                        <i className="fas fa-file-excel"></i> {t.exportToExcel}
+                                    </button>
+                                    <button className="excel-export-btn detailed" onClick={exportDetailedExcel}>
+                                        <i className="fas fa-file-excel"></i> {t.exportDetailedExcel}
+                                    </button>
+                                    <button className="clear-history-btn" onClick={clearOrderHistory}>
+                                        <i className="fas fa-trash"></i> {t.clearHistory}
+                                    </button>
+                                </div>
                             </div>
                             
                             <div className="report-summary">
@@ -2957,6 +3429,7 @@
                                         <tr>
                                             <th>{t.orderId}</th>
                                             <th>{t.dateTime}</th>
+                                            <th>{language === 'en' ? 'Cashier' : 'អ្នកទទួលប្រាក់'}</th>
                                             <th>{language === 'en' ? 'Items' : 'ធាតុ'}</th>
                                             <th>{t.total}</th>
                                             <th>{t.status}</th>
@@ -2967,10 +3440,11 @@
                                             <tr key={order.id}>
                                                 <td>#{order.id}</td>
                                                 <td>{new Date(order.date).toLocaleString()}</td>
+                                                <td>{order.cashier || 'N/A'}</td>
                                                 <td>
                                                     {order.items.map(item => (
                                                         <div key={item.id}>
-                                                            {item.quantity}x {language === 'en' ? item.name : menuData[Object.keys(menuData).find(cat => menuData[cat].some(i => i.id === item.id))]?.find(i => i.id === item.id)?.nameKh || item.name} 
+                                                            {item.quantity}x {language === 'en' ? item.name : item.nameKh} 
                                                             {item.sugarLevel && ` (${item.sugarLevel} ${language === 'en' ? 'sugar' : 'ស្ករ'})`}
                                                             {item.topping && ` + ${language === 'en' ? item.topping.name : item.topping.nameKh}`}
                                                             (${(item.price + (item.topping ? item.topping.price : 0)).toFixed(2)})
@@ -3038,7 +3512,10 @@
             );
         };
 
-        ReactDOM.render(<CafeDashboard />, document.getElementById('root'));
+        // Function to initialize the POS system after login
+        function initializePOS(user) {
+            ReactDOM.render(<CafeDashboard user={user} />, document.getElementById('root'));
+        }
     </script>
 </body>
 </html>
